@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Threading;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// The application itself. App.xaml says which window opens first (MainWindow) and loads
@@ -21,7 +21,7 @@ public partial class App : Application
         MessageBox.Show(
             "Something went wrong:\n\n" + e.Exception.Message + "\n\n" +
             "Details (press Ctrl+C to copy this whole message):\n" + e.Exception,
-            "Amp Player", MessageBoxButton.OK, MessageBoxImage.Warning);
+            "Nostalgia Rack", MessageBoxButton.OK, MessageBoxImage.Warning);
         e.Handled = true; // keep running if we can
     }
 }

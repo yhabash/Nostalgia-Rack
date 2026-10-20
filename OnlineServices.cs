@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>One shared web client for everything online. It follows redirects and gives up after 20 seconds.</summary>
 public static class Web
@@ -22,7 +22,7 @@ public static class Web
             AutomaticDecompression = System.Net.DecompressionMethods.All
         };
         var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(20) };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("AmpPlayer/0.6 (hobby music player)");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("NostalgiaRack/0.7 (hobby music player)");
         return client;
     }
 
@@ -307,15 +307,15 @@ public static class UrlInspector
     public static async Task<(DroppedUrlKind kind, string message)> InspectAsync(string url)
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || (uri.Scheme != "http" && uri.Scheme != "https"))
-            return (DroppedUrlKind.NotAudio, "That isn't a web address Amp Player can open.");
+            return (DroppedUrlKind.NotAudio, "That isn't a web address Nostalgia Rack can open.");
 
         if (VideoSites.Any(site => uri.Host.EndsWith(site, StringComparison.OrdinalIgnoreCase)))
             return (DroppedUrlKind.NotAudio,
-                    $"{uri.Host} is a streaming or video site. Amp Player only plays direct audio links, podcast feeds and radio streams.");
+                    $"{uri.Host} is a streaming or video site. Nostalgia Rack only plays direct audio links, podcast feeds and radio streams.");
 
         if (StreamPlaylists.LooksLikePlaylist(url)) return (DroppedUrlKind.RadioPlaylist, "");
         if (uri.AbsolutePath.EndsWith(".m3u8", StringComparison.OrdinalIgnoreCase))
-            return (DroppedUrlKind.NotAudio, "That's an HLS stream (.m3u8). Amp Player doesn't play those yet.");
+            return (DroppedUrlKind.NotAudio, "That's an HLS stream (.m3u8). Nostalgia Rack doesn't play those yet.");
 
         try
         {
@@ -342,7 +342,7 @@ public static class UrlInspector
                 return (DroppedUrlKind.NotAudio,
                         "That's a web page, not audio. Drop a direct audio link (.mp3, .flac…), a podcast feed or a radio stream instead.");
 
-            return (DroppedUrlKind.NotAudio, $"Amp Player can't play this (it is \"{(type.Length > 0 ? type : "unknown")}\").");
+            return (DroppedUrlKind.NotAudio, $"Nostalgia Rack can't play this (it is \"{(type.Length > 0 ? type : "unknown")}\").");
         }
         catch (Exception ex)
         {

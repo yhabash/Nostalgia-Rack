@@ -6,12 +6,12 @@
 -->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:AmpPlayer">
+                    xmlns:local="clr-namespace:NostalgiaRack">
 
     <!-- ===================== Fonts (embedded in the app, free SIL Open Font Licence) ===================== -->
     <FontFamily x:Key="NameplateFont">pack://application:,,,/Skin/Fonts/#Krona One</FontFamily>
     <FontFamily x:Key="DisplayFont">pack://application:,,,/Skin/Fonts/#Michroma</FontFamily>
-    <FontFamily x:Key="LabelFont">pack://application:,,,/Skin/Fonts/#Amp Jost</FontFamily>
+    <FontFamily x:Key="LabelFont">pack://application:,,,/Skin/Fonts/#Rack Jost</FontFamily>
     <FontFamily x:Key="SignatureFont">pack://application:,,,/Skin/Fonts/#Great Vibes</FontFamily>
 
     <!-- ===================== Colours ===================== -->

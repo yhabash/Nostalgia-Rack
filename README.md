@@ -1,9 +1,20 @@
-# Nostalgia Rack 0.6.2
+# Nostalgia Rack 0.7.0
 
-*(Formerly "Amp Player". The app itself and its files still use the old name for now: the nameplate, `AmpPlayer.csproj` and `AmpPlayer.exe`.)*
+The free hi-fi music player for Windows, in its champagne skin. (It used to be called "Amp Player".)
 
-The free hi-fi music player for Windows, now in its champagne skin.
-This build covers **Milestones 4, 5 and 6** in one go.
+## What's new in 0.7.0
+- **New name: Nostalgia Rack**, everywhere: the nameplate, the window and taskbar title, the messages, the project file (`NostalgiaRack.csproj`) and the program (`NostalgiaRack.exe`).
+- **13% wider.** The extra room goes to the display (longer titles fit), more space between the EQ sliders, a wider song list and a bigger search box.
+- Your library, playlists, queue, radio favourites, podcasts and settings **move across by themselves** the first time Nostalgia Rack starts. They're copied from `%LocalAppData%\AmpPlayer` to `%LocalAppData%\NostalgiaRack`. The old folder is left as a safety copy; you can delete it once everything looks right.
+
+## Updating from Amp Player (and keeping GitHub happy)
+1. Close Visual Studio.
+2. Open your project folder (the one GitHub Desktop tracks). Delete everything you can see **except the four DLLs** (bass.dll, bass_fx.dll, bassmix.dll, basswasapi.dll). If you have hidden files showing, also keep the **.git** folder: that's your GitHub history.
+3. Copy everything from inside the zip's **NostalgiaRack** folder into your project folder.
+4. Open **NostalgiaRack.csproj** in Visual Studio, choose **Build → Rebuild Solution**, then press **▶ Start**.
+5. In GitHub Desktop you'll see the renamed files. Type `0.7.0: renamed to Nostalgia Rack, 13% wider`, click **Commit to main**, then **Push origin**.
+
+Optional: rename the repository on github.com too (the repository's **Settings → Repository name → NostalgiaRack**). GitHub Desktop follows the new name by itself. If you also rename the folder on your PC, GitHub Desktop will say it can't find the repository; click **Locate…** and pick the renamed folder.
 
 ## What's new in 0.6.2
 - The whole player is **30% smaller** (drawn at 70% of the design size).
@@ -37,7 +48,7 @@ This build covers **Milestones 4, 5 and 6** in one go.
 ## Setting it up (please read, a few things changed)
 
 1. **Unzip into a new, empty folder.** Don't unzip over the old one: a file was removed (Player.cs) and it would clash.
-2. Download these four zips from **un4seen.com**, and from each one copy the DLL in its **x64** folder into the new project folder (next to `AmpPlayer.csproj`):
+2. Download these four zips from **un4seen.com**, and from each one copy the DLL in its **x64** folder into the new project folder (next to `NostalgiaRack.csproj`):
 
    | Zip from un4seen.com | File to copy (from the x64 folder) |
    |---|---|
@@ -47,7 +58,7 @@ This build covers **Milestones 4, 5 and 6** in one go.
    | basswasapi24.zip | basswasapi.dll **(new)** |
 
    You can copy bass.dll and bass_fx.dll from your old folder.
-3. Open `AmpPlayer.csproj` in Visual Studio, then choose **Build → Rebuild Solution**, then press **▶ Start**.
+3. Open `NostalgiaRack.csproj` in Visual Studio, then choose **Build → Rebuild Solution**, then press **▶ Start**.
    Visual Studio downloads the new libraries by itself the first time (it needs the internet for that).
 
 Your library, playlists, queue and settings are kept: they live in your Windows profile, not in the project folder.
@@ -83,5 +94,5 @@ You can change all of them in Advanced settings.
 Milestone 7: ReplayGain (even loudness between songs) and the compressor knobs with the gain-reduction meter (they're shown on the EQ deck but not working yet).
 
 ---
-The fonts (Krona One, Michroma, Jost (as "Amp Jost"), Great Vibes) are free under the SIL Open Font License (see `Skin/Fonts`).
+The fonts (Krona One, Michroma, Jost (as "Rack Jost"), Great Vibes) are free under the SIL Open Font License (see `Skin/Fonts`).
 BASS is free for non-commercial use; see un4seen.com before sharing it.

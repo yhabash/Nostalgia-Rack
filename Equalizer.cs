@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using ManagedBass;
 using ManagedBass.Fx;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// A 10-band graphic equalizer plus a preamp, built on the BASS_FX add-on.

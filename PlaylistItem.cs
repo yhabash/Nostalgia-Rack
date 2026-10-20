@@ -2,7 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>What kind of thing a list entry is.</summary>
 public enum TrackKind

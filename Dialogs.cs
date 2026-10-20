@@ -3,7 +3,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.Win32;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// Two small pop-up windows, built in code so they don't need their own XAML files:

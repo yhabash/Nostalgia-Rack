@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using ManagedBass;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// The very last step before the sound goes to your speakers:

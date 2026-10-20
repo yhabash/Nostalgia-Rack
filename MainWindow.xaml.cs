@@ -11,7 +11,7 @@ using System.Windows.Shell;
 using System.Windows.Threading;
 using Microsoft.Win32;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// The player window (Milestones 4, 5 and 6 together).
@@ -151,7 +151,7 @@ public partial class MainWindow : Window
             MessageBox.Show(
                 $"Could not open the library database:\n{_database.FilePath}\n\n{ex.Message}\n\n" +
                 $"A backup copy may be at:\n{_database.BackupPath}",
-                "Amp Player");
+                "Nostalgia Rack");
             Application.Current.Shutdown();
             return false;
         }
@@ -163,7 +163,7 @@ public partial class MainWindow : Window
         string? problem = _engine.Start(OutputOptionsFromSettings(), _settings.ResamplerQuality,
                                         _settings.NetBufferMs, _settings.NetPreBufferPercent);
         if (problem != null)
-            MessageBox.Show(problem, "Amp Player");
+            MessageBox.Show(problem, "Nostalgia Rack");
     }
 
     private OutputOptions OutputOptionsFromSettings() =>
@@ -520,7 +520,7 @@ public partial class MainWindow : Window
         ArtistText.Text = SlimArtist.Text = item.ArtistAlbum;
         FormatText.Text = item.Kind == TrackKind.Radio ? $"{item.Format} · LIVE".TrimStart(' ', '·') : _engine.DescribeCurrent();
         SeekBar.IsEnabled = item.Kind != TrackKind.Radio;
-        Title = $"{item.Title} – Amp Player";
+        Title = $"{item.Title} – Nostalgia Rack";
         Taskbar.Description = $"{item.Title} – {item.ArtistAlbum}";
         _media?.ShowSong(item.Title, item.Artist, item.Album);
 
@@ -946,7 +946,7 @@ public partial class MainWindow : Window
         if (outputChanged)
         {
             string? message = _engine.OpenOutput(OutputOptionsFromSettings());
-            if (message != null) MessageBox.Show(message, "Amp Player");
+            if (message != null) MessageBox.Show(message, "Nostalgia Rack");
             UpdateTransportLights();
         }
 
@@ -967,7 +967,7 @@ public partial class MainWindow : Window
                 UpdateTransportLights();
                 string? message = _engine.OpenOutput(OutputOptionsFromSettings() with { DeviceId = "" });
                 ShowStatus("OUTPUT UNPLUGGED · PAUSED", 8);
-                if (message != null) MessageBox.Show(message, "Amp Player");
+                if (message != null) MessageBox.Show(message, "Nostalgia Rack");
                 break;
             case "default-changed":
             case "failed":
@@ -1196,7 +1196,7 @@ public partial class MainWindow : Window
     {
         if (_view == ListKind.Queue) { _queue.Clear(); ShowStatus("QUEUE CLEARED"); return; }
         if (_view != ListKind.Playlist) return;
-        if (_playlist.Count > 0 && MessageBox.Show("Empty the playlist? (Saved playlists are not deleted.)", "Amp Player",
+        if (_playlist.Count > 0 && MessageBox.Show("Empty the playlist? (Saved playlists are not deleted.)", "Nostalgia Rack",
                                                    MessageBoxButton.OKCancel) != MessageBoxResult.OK) return;
         _playlist.Clear();
         _playlistPosition = null;
@@ -1413,7 +1413,7 @@ public partial class MainWindow : Window
 
         if (_playlistChanged && _playlist.Count > 0 &&
             MessageBox.Show($"Open \"{info.Name}\"? Changes to the current list that you haven't saved will be lost.",
-                            "Amp Player", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
+                            "Nostalgia Rack", MessageBoxButton.OKCancel) != MessageBoxResult.OK)
         {
             SetComboWithoutLoading(e.RemovedItems.Count > 0 ? e.RemovedItems[0] as PlaylistInfo : null);
             return;
@@ -1440,7 +1440,7 @@ public partial class MainWindow : Window
 
         var existing = _database.GetPlaylists().FirstOrDefault(p => p.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
         if (existing != null &&
-            MessageBox.Show($"A playlist called \"{existing.Name}\" already exists. Replace it?", "Amp Player",
+            MessageBox.Show($"A playlist called \"{existing.Name}\" already exists. Replace it?", "Nostalgia Rack",
                             MessageBoxButton.OKCancel) != MessageBoxResult.OK) return;
 
         SaveInto(existing?.Id ?? _database.GetOrCreatePlaylist(name), existing?.Name ?? name);
@@ -1461,7 +1461,7 @@ public partial class MainWindow : Window
     {
         if (PlaylistCombo.SelectedItem is not PlaylistInfo info) return;
         if (MessageBox.Show($"Delete the saved playlist \"{info.Name}\"? Your music files are not touched, and the list on screen stays.",
-                            "Amp Player", MessageBoxButton.OKCancel) != MessageBoxResult.OK) return;
+                            "Nostalgia Rack", MessageBoxButton.OKCancel) != MessageBoxResult.OK) return;
         _database.DeletePlaylist(info.Id);
         SetComboWithoutLoading(null);
         RefreshPlaylistCombo();

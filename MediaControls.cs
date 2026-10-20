@@ -1,7 +1,7 @@
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
-/// Connects Amp Player to Windows' own media controls (SMTC): the play/pause/next keys on
+/// Connects Nostalgia Rack to Windows' own media controls (SMTC): the play/pause/next keys on
 /// your keyboard and headphones, and the little media panel Windows shows next to the
 /// volume pop-up, with the song title. Because Windows routes the keys to whichever app
 /// last played, this also stops browsers or other players from "stealing" the media keys.

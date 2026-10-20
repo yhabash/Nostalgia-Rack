@@ -9,11 +9,11 @@
     <UseWPF>true</UseWPF>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <RootNamespace>AmpPlayer</RootNamespace>
-    <AssemblyName>AmpPlayer</AssemblyName>
+    <RootNamespace>NostalgiaRack</RootNamespace>
+    <AssemblyName>NostalgiaRack</AssemblyName>
     <!-- 64-bit, so it matches the 64-bit BASS files -->
     <PlatformTarget>x64</PlatformTarget>
-    <Version>0.6.2</Version>
+    <Version>0.7.0</Version>
   </PropertyGroup>
 
   <!-- Libraries (Visual Studio downloads these automatically) -->
@@ -33,13 +33,13 @@
     <!-- (DPAPI, used for the Podcast Index key and secret, is built into .NET 10 on Windows; no package needed.) -->
   </ItemGroup>
 
-  <!-- The skin's fonts, built into AmpPlayer.exe (all free, SIL Open Font License) -->
+  <!-- The skin's fonts, built into NostalgiaRack.exe (all free, SIL Open Font License) -->
   <ItemGroup>
     <Resource Include="Skin\Fonts\*.ttf" />
   </ItemGroup>
 
   <!-- The real engine files. You download them from un4seen.com (the x64 versions) and put them in this folder.
-       These lines copy them next to AmpPlayer.exe every time you build. -->
+       These lines copy them next to NostalgiaRack.exe every time you build. -->
   <ItemGroup>
     <None Include="bass.dll" Condition="Exists('bass.dll')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -3,7 +3,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// The champagne "skirt and scale" knob (K3 in the design): a printed 0–10 tick scale,

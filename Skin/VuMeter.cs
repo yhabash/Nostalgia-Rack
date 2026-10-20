@@ -2,7 +2,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// The cream backlit needle meter (V1 in the design), drawn in code so it stays sharp.

@@ -4,12 +4,12 @@ using ManagedBass;
 using ManagedBass.Mix;
 using ManagedBass.Wasapi;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>How the sound card should be used (from the Advanced settings).</summary>
 public sealed record OutputOptions(
     string DeviceId,        // "" = whatever Windows uses as the default
-    bool Exclusive,         // true = only Amp Player uses the device (bit-perfect)
+    bool Exclusive,         // true = only Nostalgia Rack uses the device (bit-perfect)
     int SampleRate,         // 0 = automatic (exclusive mode only; shared uses Windows' rate)
     int BufferMs);          // 0 = automatic
 
@@ -31,7 +31,7 @@ public sealed record OutputDevice(string Id, string Name, bool IsDefault)
 ///   For a crossfade, the next song is added a few seconds early while both fade.
 /// - The EQ and output stage sit on the mixer, so they keep working from song to song.
 /// - WASAPI is Windows' modern sound system. Shared mode mixes with other apps; exclusive
-///   mode hands the sound card to Amp Player alone (the purest, "bit-perfect" path).
+///   mode hands the sound card to Nostalgia Rack alone (the purest, "bit-perfect" path).
 ///
 /// Timing: BASS calls the "sync" methods below on its own audio thread, at the exact moment
 /// in the sound. They must be quick, so anything slow is sent away to another thread, and
@@ -178,7 +178,7 @@ public sealed class AudioEngine : IDisposable
         try
         {
             ApplyTuning(resamplerQuality, netBufferMs, netPreBufferPercent);
-            Bass.NetAgent = "AmpPlayer/0.6";
+            Bass.NetAgent = "NostalgiaRack/0.7";
             Bass.NetPlaylist = 1; // let BASS follow .pls/.m3u links inside streams too
 
             if (!Bass.Init(Bass.NoSoundDevice))

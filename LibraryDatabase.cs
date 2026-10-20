@@ -1,7 +1,7 @@
 using System.IO;
 using Microsoft.Data.Sqlite;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>A saved playlist as shown in the drop-down list.</summary>
 public sealed record PlaylistInfo(long Id, string Name)
@@ -11,7 +11,7 @@ public sealed record PlaylistInfo(long Id, string Name)
 
 /// <summary>
 /// The music library, stored in one SQLite database file:
-///   %LocalAppData%\AmpPlayer\library.db
+///   %LocalAppData%\NostalgiaRack\library.db
 /// (open it with "DB Browser for SQLite" if you are curious).
 ///
 /// Tables:
@@ -38,11 +38,41 @@ public sealed class LibraryDatabase
 
     public LibraryDatabase()
     {
-        string folder = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AmpPlayer");
+        string appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string folder = Path.Combine(appData, "NostalgiaRack");
         Directory.CreateDirectory(folder);
         FilePath = Path.Combine(folder, "library.db");
         BackupPath = Path.Combine(folder, "library.backup.db");
+
+        CopyFromOldName(Path.Combine(appData, "AmpPlayer"), folder);
+    }
+
+    /// <summary>
+    /// The player used to be called "Amp Player" and kept its library in %LocalAppData%\AmpPlayer.
+    /// The first time Nostalgia Rack starts, it copies that library across (songs, playlists,
+    /// queue, radio, podcasts and settings). The old folder is left untouched, as a safety copy;
+    /// you can delete it yourself once everything looks right.
+    /// </summary>
+    private void CopyFromOldName(string oldFolder, string newFolder)
+    {
+        string oldDb = Path.Combine(oldFolder, "library.db");
+        if (File.Exists(FilePath) || !File.Exists(oldDb)) return; // already moved, or nothing to move
+
+        try
+        {
+            // The database plus its two working files (WAL mode), and the start-up backup.
+            foreach (string name in new[] { "library.db", "library.db-wal", "library.db-shm", "library.backup.db" })
+            {
+                string from = Path.Combine(oldFolder, name);
+                if (File.Exists(from)) File.Copy(from, Path.Combine(newFolder, name), overwrite: false);
+            }
+        }
+        catch (Exception)
+        {
+            // If copying fails half-way, start clean rather than with a damaged copy.
+            foreach (string name in new[] { "library.db", "library.db-wal", "library.db-shm" })
+                try { File.Delete(Path.Combine(newFolder, name)); } catch (Exception) { }
+        }
     }
 
     // Each job opens its own connection (cheap; SQLite reuses them behind the scenes).

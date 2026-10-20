@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Navigation;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// Advanced settings. Works on a copy of the settings, so Cancel really changes nothing.

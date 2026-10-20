@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>
 /// An extra on/off setting the skin's buttons can read. "Lit" means the backlit stencil

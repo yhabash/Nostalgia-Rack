@@ -3,7 +3,7 @@ using System.Text;
 using System.Text.Json;
 using System.Windows.Input;
 
-namespace AmpPlayer;
+namespace NostalgiaRack;
 
 /// <summary>Things a keyboard shortcut can do.</summary>
 public enum ShortcutAction
