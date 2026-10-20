@@ -1,0 +1,247 @@
+<!--
+  SettingsWindow.xaml: Advanced settings (Ctrl+, or the ⚙ key on the case).
+  A champagne faceplate in the rosewood case, with dark glass fields like the player's display.
+  Sections: Output · Playback · Internet radio · Podcasts · Library · Appearance · Keyboard shortcuts.
+  What the controls do is in SettingsWindow.xaml.cs.
+-->
+<Window x:Class="AmpPlayer.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Advanced settings – Amp Player"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="NoResize" ShowInTaskbar="False"
+        Width="600" Height="680" WindowStartupLocation="CenterOwner"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Display"
+        FontFamily="{StaticResource LabelFont}">
+
+    <Window.Resources>
+        <!-- The champagne scrollbar for the long page -->
+        <Style TargetType="ScrollBar" BasedOn="{StaticResource GlassScrollBar}"/>
+
+        <Style x:Key="Field" TargetType="ComboBox" BasedOn="{StaticResource GlassCombo}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Width" Value="300"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style x:Key="FieldText" TargetType="TextBox" BasedOn="{StaticResource GlassTextBox}">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Width" Value="300"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+        <Style x:Key="FieldPassword" TargetType="PasswordBox">
+            <Setter Property="Height" Value="26"/>
+            <Setter Property="Width" Value="300"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Background" Value="{StaticResource SmokeBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource AmberBrush}"/>
+            <Setter Property="CaretBrush" Value="{StaticResource AmberBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource GoldBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Row" TargetType="Grid">
+            <Setter Property="Margin" Value="0,0,0,10"/>
+        </Style>
+    </Window.Resources>
+
+    <Border Margin="12" CornerRadius="9" Background="{StaticResource RoseBrush}">
+        <Border.Effect>
+            <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="5" Direction="270" Opacity="0.6"/>
+        </Border.Effect>
+        <Border Margin="12" Style="{StaticResource Faceplate}">
+            <DockPanel>
+
+                <!-- Title strip (drag the window here) -->
+                <Grid DockPanel.Dock="Top" Height="44" Background="Transparent" MouseLeftButtonDown="Title_MouseLeftButtonDown">
+                    <TextBlock Text="AMP PLAYER" FontFamily="{StaticResource NameplateFont}" FontSize="10"
+                               Foreground="{StaticResource InkBrush}" Margin="20,0,0,0" VerticalAlignment="Center"/>
+                    <TextBlock Text="ADVANCED SETTINGS" Style="{StaticResource Engraved}" FontSize="10"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Button Style="{StaticResource TextKey}" Content="✕" HorizontalAlignment="Right" Margin="0,0,14,0"
+                            VerticalAlignment="Center" Width="26" Click="Cancel_Click" ToolTip="Close without saving"/>
+                    <Border Style="{StaticResource PinH}" VerticalAlignment="Bottom" Margin="16,0"/>
+                </Grid>
+
+                <!-- Buttons at the bottom -->
+                <Grid DockPanel.Dock="Bottom" Height="52">
+                    <Border Style="{StaticResource PinH}" VerticalAlignment="Top" Margin="16,0"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <Button Style="{StaticResource TextKey}" Content="CANCEL" Width="78" Margin="0,0,8,0" Click="Cancel_Click" IsCancel="True"/>
+                        <Button Style="{StaticResource TextKey}" Content="APPLY" Width="78" Margin="0,0,8,0" Click="Apply_Click"/>
+                        <Button Style="{StaticResource TextKey}" Content="OK" Width="78" Click="Ok_Click" IsDefault="True"/>
+                    </StackPanel>
+                </Grid>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,4,16,12">
+                    <StackPanel>
+
+                        <!-- ============ OUTPUT ============ -->
+                        <TextBlock Text="OUTPUT" Style="{StaticResource SettingHeader}" Margin="0,10,0,8"/>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Output device" Style="{StaticResource SettingLabel}"/>
+                            <ComboBox x:Name="DeviceCombo" Grid.Column="1" Style="{StaticResource Field}"/>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Mode" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton x:Name="SharedMode" Style="{StaticResource SourceKey}" GroupName="Mode" Content="SHARED" Width="90" Margin="0,0,6,0"/>
+                                    <RadioButton x:Name="ExclusiveMode" Style="{StaticResource SourceKey}" GroupName="Mode" Content="EXCLUSIVE" Width="90"/>
+                                </StackPanel>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="Shared plays alongside other apps. Exclusive gives Amp Player the device alone, bit-perfect, with Windows' mixer and volume out of the way. Other apps go silent while it plays."/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Sample rate" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <ComboBox x:Name="RateCombo" Style="{StaticResource Field}"/>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="Automatic follows the device (shared) or the song (exclusive, when the device supports it)."/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Buffer" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <ComboBox x:Name="BufferCombo" Style="{StaticResource Field}"/>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="Raise this if you hear clicks or dropouts."/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Resampler quality" Style="{StaticResource SettingLabel}"/>
+                            <ComboBox x:Name="ResamplerCombo" Grid.Column="1" Style="{StaticResource Field}"/>
+                        </Grid>
+
+                        <!-- ============ PLAYBACK ============ -->
+                        <TextBlock Text="PLAYBACK" Style="{StaticResource SettingHeader}"/>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Crossfade" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <ComboBox x:Name="CrossfadeCombo" Style="{StaticResource Field}"/>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="Off = gapless: songs follow each other with no gap at all. Crossfade never happens between songs from the same album, or on radio."/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="ReplayGain" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <ComboBox x:Name="ReplayGainCombo" Style="{StaticResource Field}" IsEnabled="False"/>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="Evens out loudness between songs. Arrives in Milestone 7."/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Skip back / forward" Style="{StaticResource SettingLabel}"/>
+                            <ComboBox x:Name="SeekStepCombo" Grid.Column="1" Style="{StaticResource Field}"/>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="VU meter delay" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <ComboBox x:Name="BluetoothCombo" Style="{StaticResource Field}"/>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="Bluetooth headphones play a little late. Delay the needles so they move with what you hear."/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ============ INTERNET RADIO ============ -->
+                        <TextBlock Text="INTERNET RADIO" Style="{StaticResource SettingHeader}"/>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Network buffer" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <ComboBox x:Name="NetBufferCombo" Style="{StaticResource Field}"/>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="More buffer rides out a shaky connection, but stations take longer to start."/>
+                            </StackPanel>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Start playing at" Style="{StaticResource SettingLabel}"/>
+                            <ComboBox x:Name="PreBufferCombo" Grid.Column="1" Style="{StaticResource Field}"/>
+                        </Grid>
+
+                        <!-- ============ PODCASTS ============ -->
+                        <TextBlock Text="PODCASTS" Style="{StaticResource SettingHeader}"/>
+                        <TextBlock Style="{StaticResource SettingHint}" Margin="0,-4,0,10" Width="470" HorizontalAlignment="Left">
+                            Podcast search uses the free Podcast Index. Sign up at
+                            <Hyperlink NavigateUri="https://api.podcastindex.org/signup" RequestNavigate="Link_RequestNavigate">api.podcastindex.org</Hyperlink>,
+                            then paste the key and secret here. They are stored encrypted, only on this PC, for your Windows account.
+                            You don't need them to subscribe by feed address.
+                        </TextBlock>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="API key" Style="{StaticResource SettingLabel}"/>
+                            <TextBox x:Name="PodcastKeyBox" Grid.Column="1" Style="{StaticResource FieldText}" Tag="PASTE THE KEY"/>
+                        </Grid>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="API secret" Style="{StaticResource SettingLabel}"/>
+                            <PasswordBox x:Name="PodcastSecretBox" Grid.Column="1" Style="{StaticResource FieldPassword}"/>
+                        </Grid>
+
+                        <!-- ============ LIBRARY ============ -->
+                        <TextBlock Text="LIBRARY" Style="{StaticResource SettingHeader}"/>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Music folders" Style="{StaticResource SettingLabel}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button Style="{StaticResource TextKey}" Content="FOLDERS…" Width="90" Click="LibraryFolders_Click"/>
+                                <TextBlock x:Name="FolderCountText" Style="{StaticResource SettingHint}" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ============ APPEARANCE ============ -->
+                        <TextBlock Text="APPEARANCE" Style="{StaticResource SettingHeader}"/>
+
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Theme" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <ComboBox x:Name="ThemeCombo" Style="{StaticResource Field}"/>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="More finishes may come later."/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ============ KEYBOARD SHORTCUTS ============ -->
+                        <Grid Margin="0,16,0,8">
+                            <TextBlock Text="KEYBOARD SHORTCUTS" Style="{StaticResource SettingHeader}" Margin="0"/>
+                            <Button Style="{StaticResource TextKey}" Content="RESET ALL" HorizontalAlignment="Right" Width="80"
+                                    Margin="0,0,8,0" Click="ResetShortcuts_Click"/>
+                        </Grid>
+                        <TextBlock Style="{StaticResource SettingHint}" Margin="0,-4,0,10" Width="470" HorizontalAlignment="Left"
+                                   Text="Click a box and press the new keys (for example Ctrl+P). The media keys on your keyboard always work too."/>
+                        <StackPanel x:Name="ShortcutPanel"/>
+                        <TextBlock x:Name="ShortcutMessage" Style="{StaticResource SettingHint}" Foreground="#8A3A1E" Margin="0,4,0,0"/>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Border>
+</Window>

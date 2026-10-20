@@ -1,0 +1,458 @@
+<!--
+  MainWindow.xaml: the player, in the champagne skin (design Version B).
+  Three decks stacked in a rosewood case: the main deck (display, VU meters, transport,
+  balance and volume), the EQ deck, and the playlist deck. Each can fold away, and the
+  whole player can shrink to a slim strip. Positions follow the approved mockups.
+  What happens when you click things is in MainWindow.xaml.cs.
+-->
+<Window x:Class="AmpPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:AmpPlayer"
+        Title="Amp Player"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="CanMinimize" SizeToContent="WidthAndHeight"
+        WindowStartupLocation="CenterScreen"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="Grayscale"
+        FontFamily="{StaticResource LabelFont}"
+        AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop"
+        PreviewKeyDown="Window_PreviewKeyDown">
+
+    <Window.Resources>
+        <!-- Small amber text links on the glass (CHAPTERS, TRANSCRIPT) -->
+        <Style x:Key="GlassLink" TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource AmberDimBrush}"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="0,0,10,0"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock x:Name="Text" Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                   Foreground="{TemplateBinding Foreground}" FontSize="{TemplateBinding FontSize}"/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Text" Property="Foreground" Value="{StaticResource AmberBrush}"/>
+                                <Setter TargetName="Text" Property="TextDecorations" Value="Underline"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- White icons for the taskbar thumbnail buttons -->
+        <DrawingImage x:Key="ThumbPrevImage">
+            <DrawingImage.Drawing><GeometryDrawing Brush="White" Geometry="{StaticResource IconPrev}"/></DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="ThumbPlayImage">
+            <DrawingImage.Drawing><GeometryDrawing Brush="White" Geometry="{StaticResource IconPlay}"/></DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="ThumbPauseImage">
+            <DrawingImage.Drawing><GeometryDrawing Brush="White" Geometry="{StaticResource IconPause}"/></DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="ThumbNextImage">
+            <DrawingImage.Drawing><GeometryDrawing Brush="White" Geometry="{StaticResource IconNext}"/></DrawingImage.Drawing>
+        </DrawingImage>
+    </Window.Resources>
+
+    <!-- Taskbar: previous / play-pause / next under the thumbnail, and progress on the icon -->
+    <Window.TaskbarItemInfo>
+        <TaskbarItemInfo x:Name="Taskbar" Description="Amp Player">
+            <TaskbarItemInfo.ThumbButtonInfos>
+                <ThumbButtonInfo x:Name="ThumbPrev" Description="Previous" ImageSource="{StaticResource ThumbPrevImage}" Click="ThumbPrev_Click"/>
+                <ThumbButtonInfo x:Name="ThumbPlay" Description="Play" ImageSource="{StaticResource ThumbPlayImage}" Click="ThumbPlay_Click"/>
+                <ThumbButtonInfo x:Name="ThumbNext" Description="Next" ImageSource="{StaticResource ThumbNextImage}" Click="ThumbNext_Click"/>
+            </TaskbarItemInfo.ThumbButtonInfos>
+        </TaskbarItemInfo>
+    </Window.TaskbarItemInfo>
+
+    <StackPanel Margin="14,10,14,18">
+        <!-- The whole player is drawn at 70% of the design size (the design is 600 px wide). -->
+        <StackPanel.LayoutTransform>
+            <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
+        </StackPanel.LayoutTransform>
+
+        <!-- ===================== The rosewood case ===================== -->
+        <Border x:Name="CaseBorder" CornerRadius="9" Background="{StaticResource RoseBrush}"
+                MouseLeftButtonDown="Case_MouseLeftButtonDown">
+            <Border.Effect>
+                <DropShadowEffect Color="Black" BlurRadius="22" ShadowDepth="6" Direction="270" Opacity="0.6"/>
+            </Border.Effect>
+            <Grid>
+                <Border CornerRadius="9" Background="{StaticResource GrainBrush}" IsHitTestVisible="False"/>
+
+                <!-- Settings, minimise and close, on the right wooden side -->
+                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,7,0">
+                    <Button x:Name="CloseKey" Style="{StaticResource CaseKey}" Content="✕" Click="CloseKey_Click" ToolTip="Close"/>
+                    <Button x:Name="MinimizeKey" Style="{StaticResource CaseKey}" Content="–" Click="MinimizeKey_Click" ToolTip="Minimise"/>
+                    <Button x:Name="SettingsKey" Style="{StaticResource CaseKey}" Content="⚙" Click="SettingsKey_Click" ToolTip="Advanced settings (Ctrl+,)"/>
+                </StackPanel>
+
+                <Border Margin="36,10,36,12" Background="#0D0B09" Padding="4" CornerRadius="4">
+                    <StackPanel>
+
+                        <!-- ===================== MAIN DECK ===================== -->
+                        <Border x:Name="MainDeck" Style="{StaticResource Faceplate}" Width="600" Height="210">
+                            <Grid>
+                                <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
+                                <Canvas>
+                                    <TextBlock Canvas.Left="20" Canvas.Top="12" Text="AMP PLAYER" FontFamily="{StaticResource NameplateFont}"
+                                               FontSize="10" Foreground="{StaticResource InkBrush}" MouseLeftButtonDown="Case_MouseLeftButtonDown">
+                                        <TextBlock.Effect><DropShadowEffect Color="#FFFAE6" ShadowDepth="1" Direction="270" BlurRadius="0" Opacity="0.75"/></TextBlock.Effect>
+                                    </TextBlock>
+                                    <TextBlock Canvas.Right="40" Canvas.Top="1" Text="Yazan" FontFamily="{StaticResource SignatureFont}"
+                                               FontSize="22" Foreground="#6B5228" IsHitTestVisible="False">
+                                        <TextBlock.Effect><DropShadowEffect Color="#FFFAE6" ShadowDepth="1" Direction="270" BlurRadius="0" Opacity="0.6"/></TextBlock.Effect>
+                                    </TextBlock>
+                                    <Button x:Name="MainFold" Canvas.Right="6" Canvas.Top="6" Style="{StaticResource FoldTab}"
+                                            Click="MainFold_Click" ToolTip="Shrink to the slim strip (Ctrl+M)">
+                                        <Path Data="{StaticResource ChevronUp}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
+                                    </Button>
+
+                                    <!-- The smoked glass: display on the left, VU meters on the right -->
+                                    <Border Canvas.Left="18" Canvas.Top="34" Width="564" Height="96" Style="{StaticResource Glass}">
+                                        <Grid>
+                                            <Border Background="{StaticResource AmberAmbientBrush}" CornerRadius="3" IsHitTestVisible="False"/>
+                                            <Canvas>
+                                                <TextBlock x:Name="StatusLine" Canvas.Left="14" Canvas.Top="6" Width="214"
+                                                           Style="{StaticResource DisplaySmall}" Text="READY"/>
+                                                <StackPanel Canvas.Left="232" Canvas.Top="6" Orientation="Horizontal">
+                                                    <Button x:Name="ChaptersButton" Style="{StaticResource GlassLink}" Content="CHAPTERS ▾"
+                                                            Click="ChaptersButton_Click" Visibility="Collapsed" ToolTip="Jump to a chapter"/>
+                                                    <Button x:Name="TranscriptButton" Style="{StaticResource GlassLink}" Content="TRANSCRIPT"
+                                                            Click="TranscriptButton_Click" Visibility="Collapsed" ToolTip="Open the episode transcript in your browser"/>
+                                                </StackPanel>
+                                                <TextBlock x:Name="TitleText" Canvas.Left="14" Canvas.Top="23" Width="318"
+                                                           Style="{StaticResource DisplayGlow}" FontSize="15"
+                                                           LineStackingStrategy="BlockLineHeight" LineHeight="20" Text="NO SONG LOADED"/>
+                                                <TextBlock x:Name="ArtistText" Canvas.Left="14" Canvas.Top="44" Width="318" FontSize="13" FontWeight="Medium"
+                                                           LineStackingStrategy="BlockLineHeight" LineHeight="17"
+                                                           Foreground="{StaticResource GoldTextBrush}" TextTrimming="CharacterEllipsis" Text=""/>
+                                                <StackPanel Canvas.Left="14" Canvas.Top="61" Orientation="Horizontal">
+                                                    <TextBlock x:Name="TimeText" Style="{StaticResource DisplayGlow}" FontSize="16" LineStackingStrategy="BlockLineHeight" LineHeight="20" Text="00:00"/>
+                                                    <TextBlock x:Name="LengthText" Margin="7,0,0,2" VerticalAlignment="Bottom" FontSize="11.5" FontWeight="Medium"
+                                                               Foreground="{StaticResource AmberDimBrush}" Text=""/>
+                                                </StackPanel>
+                                                <TextBlock x:Name="FormatText" Canvas.Left="150" Canvas.Top="65" Width="182" TextAlignment="Right"
+                                                           Style="{StaticResource DisplaySmall}" Text=""/>
+                                                <Slider x:Name="SeekBar" Canvas.Left="14" Canvas.Top="82" Width="318" Style="{StaticResource SeekSlider}"
+                                                        Thumb.DragStarted="SeekBar_DragStarted" Thumb.DragCompleted="SeekBar_DragCompleted"
+                                                        PreviewMouseLeftButtonUp="SeekBar_MouseUp"/>
+                                                <StackPanel Canvas.Right="12" Canvas.Top="16" Orientation="Horizontal">
+                                                    <local:VuMeter x:Name="VuLeft" Width="103" Height="64" ChannelLabel="L"/>
+                                                    <local:VuMeter x:Name="VuRight" Width="103" Height="64" ChannelLabel="R" Margin="6,0,0,0"/>
+                                                </StackPanel>
+                                            </Canvas>
+                                            <Border Background="{StaticResource GlassGlareBrush}" CornerRadius="3" IsHitTestVisible="False"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Canvas.Left="18" Canvas.Top="137" Width="564" Style="{StaticResource PinH}"/>
+
+                                    <!-- Transport: previous, back, play, pause, stop, forward, next -->
+                                    <StackPanel Canvas.Left="18" Canvas.Top="152" Orientation="Horizontal">
+                                        <Button x:Name="PrevButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Previous_Click" ToolTip="Previous (Ctrl+Left)">
+                                            <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconPrev}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="BackButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Back_Click" ToolTip="Skip back (Shift+Left)">
+                                            <Viewbox Style="{StaticResource Icon}">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Data="{StaticResource IconBackArc}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.6"/>
+                                                    <Path Data="{StaticResource IconBackHead}" Style="{StaticResource FillIcon}"/>
+                                                    <TextBlock x:Name="BackStepText" Canvas.Left="7.6" Canvas.Top="9.6" Text="15" FontSize="7" FontWeight="Medium"
+                                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Control}}"/>
+                                                </Canvas>
+                                            </Viewbox>
+                                        </Button>
+                                        <Button x:Name="PlayButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Play_Click" ToolTip="Play (Space)">
+                                            <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconPlay}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="PauseButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Pause_Click" ToolTip="Pause (Space)">
+                                            <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconPause}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="StopButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Stop_Click" ToolTip="Stop (Ctrl+Space)">
+                                            <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconStop}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="FwdButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Forward_Click" ToolTip="Skip forward (Shift+Right)">
+                                            <Viewbox Style="{StaticResource Icon}">
+                                                <Canvas Width="24" Height="24">
+                                                    <Path Data="{StaticResource IconFwdArc}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.6"/>
+                                                    <Path Data="{StaticResource IconFwdHead}" Style="{StaticResource FillIcon}"/>
+                                                    <TextBlock x:Name="FwdStepText" Canvas.Left="7.4" Canvas.Top="9.6" Text="15" FontSize="7" FontWeight="Medium"
+                                                               Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Control}}"/>
+                                                </Canvas>
+                                            </Viewbox>
+                                        </Button>
+                                        <Button x:Name="NextButton" Style="{StaticResource StencilButton}" Click="Next_Click" ToolTip="Next (Ctrl+Right)">
+                                            <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconNext}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
+                                        </Button>
+                                    </StackPanel>
+
+                                    <!-- Balance and volume knobs -->
+                                    <StackPanel Canvas.Right="20" Canvas.Top="146" Height="56" Orientation="Horizontal">
+                                        <TextBlock Text="BALANCE" Style="{StaticResource EngravedTiny}" FontSize="11.5" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <local:Knob x:Name="BalanceKnob" Width="50" Height="50" Minimum="-1" Maximum="1" DefaultValue="0"
+                                                    SmallChange="0.05" ValueChanged="BalanceKnob_ValueChanged" ToolTip="Balance (double-click to centre)"/>
+                                        <TextBlock Text="VOLUME" Style="{StaticResource EngravedTiny}" FontSize="11.5" VerticalAlignment="Center" Margin="12,0,8,0"/>
+                                        <local:Knob x:Name="VolumeKnob" Width="56" Height="56" Minimum="0" Maximum="1" DefaultValue="0.8"
+                                                    ValueChanged="VolumeKnob_ValueChanged" ToolTip="Volume (Ctrl+Up / Ctrl+Down)"/>
+                                    </StackPanel>
+                                </Canvas>
+                            </Grid>
+                        </Border>
+
+                        <!-- ===================== EQ DECK ===================== -->
+                        <Border x:Name="EqSeam" Style="{StaticResource Seam}"/>
+                        <Border x:Name="EqDeck" Style="{StaticResource Faceplate}" Width="600" Height="200">
+                            <Grid>
+                                <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
+                                <Canvas>
+                                    <Ellipse Canvas.Left="7" Canvas.Bottom="7" Style="{StaticResource Screw}"/>
+                                    <Ellipse Canvas.Right="7" Canvas.Bottom="7" Style="{StaticResource Screw}"/>
+                                    <Button x:Name="EqFold" Canvas.Right="6" Canvas.Top="6" Style="{StaticResource FoldTab}"
+                                            Click="EqFold_Click" ToolTip="Fold away the EQ (Ctrl+1)">
+                                        <Path Data="{StaticResource ChevronUp}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
+                                    </Button>
+
+                                    <TextBlock Canvas.Left="20" Canvas.Top="15" Text="GRAPHIC EQUALIZER" Style="{StaticResource Engraved}"/>
+                                    <ComboBox x:Name="PresetCombo" Canvas.Left="206" Canvas.Top="10" Width="158" Style="{StaticResource GlassCombo}"
+                                              Tag="PRESET" SelectionChanged="PresetCombo_SelectionChanged" ToolTip="EQ presets"/>
+
+                                    <!-- Engraved dB lines behind the sliders -->
+                                    <Border Canvas.Left="44" Canvas.Top="50" Width="322" Height="1" Background="#4746320F"/>
+                                    <Border Canvas.Left="44" Canvas.Top="75" Width="322" Height="1" Background="#4746320F" Opacity="0.5"/>
+                                    <Border Canvas.Left="44" Canvas.Top="100" Width="322" Height="1" Background="#4746320F"/>
+                                    <Border Canvas.Left="44" Canvas.Top="125" Width="322" Height="1" Background="#4746320F" Opacity="0.5"/>
+                                    <Border Canvas.Left="44" Canvas.Top="150" Width="322" Height="1" Background="#4746320F"/>
+                                    <TextBlock Canvas.Left="14" Canvas.Top="45" Width="26" TextAlignment="Right" Text="+12" Style="{StaticResource EngravedTiny}"/>
+                                    <TextBlock Canvas.Left="14" Canvas.Top="95" Width="26" TextAlignment="Right" Text="0" Style="{StaticResource EngravedTiny}"/>
+                                    <TextBlock Canvas.Left="14" Canvas.Top="145" Width="26" TextAlignment="Right" Text="−12" Style="{StaticResource EngravedTiny}"/>
+
+                                    <!-- Preamp, a gold divider, then the 10 bands. Tag = which band (0 to 9). -->
+                                    <StackPanel Canvas.Left="44" Canvas.Top="44" Width="28">
+                                        <Slider x:Name="PreampSlider" Style="{StaticResource EqSlider}" ValueChanged="Preamp_ValueChanged"
+                                                MouseDoubleClick="EqSlider_DoubleClick" ToolTip="Preamp (double-click for 0 dB)"/>
+                                        <TextBlock Text="PRE" Style="{StaticResource EngravedTiny}" FontWeight="Medium" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                    <Border Canvas.Left="79" Canvas.Top="46" Height="120" Style="{StaticResource PinV}"/>
+                                    <StackPanel x:Name="BandPanel" Canvas.Left="86" Canvas.Top="44" Orientation="Horizontal">
+                                        <StackPanel Width="28"><Slider Tag="0" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="31" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="1" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="62" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="2" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="125" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="3" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="250" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="4" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="500" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="5" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="1K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="6" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="2K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="7" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="4K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="8" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="8K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="28"><Slider Tag="9" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="16K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Compressor side -->
+                                    <Border Canvas.Left="378" Canvas.Top="14" Height="172" Style="{StaticResource PinV}"/>
+                                    <TextBlock Canvas.Left="392" Canvas.Top="15" Text="COMPRESSOR" Style="{StaticResource Engraved}"/>
+                                    <local:VuMeter x:Name="GrMeter" Canvas.Left="392" Canvas.Top="34" Width="92" Height="57" IsGainReduction="True" Level="0"
+                                                   ToolTip="Gain reduction: how hard the compressor works (compressor arrives in Milestone 7)"/>
+                                    <Button x:Name="SoftClipKey" Canvas.Left="392" Canvas.Top="94" Width="92" Height="20" Style="{StaticResource TextKey}"
+                                            FontSize="10" Padding="0" Content="SOFT CLIP" Click="SoftClipKey_Click"
+                                            ToolTip="Rounds off loud peaks smoothly instead of letting them crackle (lit = on)"/>
+                                    <StackPanel Canvas.Left="494" Canvas.Top="34" Orientation="Horizontal">
+                                        <StackPanel Margin="0,0,8,0">
+                                            <Button x:Name="EqOnButton" Style="{StaticResource StencilButton}" Click="EqOnButton_Click" ToolTip="EQ on / off (Ctrl+E)">
+                                                <Viewbox Style="{StaticResource Icon}">
+                                                    <Canvas Width="24" Height="24">
+                                                        <Path Data="{StaticResource IconEqLines}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.4"/>
+                                                        <Path Data="{StaticResource IconEqKnobs}" Style="{StaticResource FillIcon}"/>
+                                                    </Canvas>
+                                                </Viewbox>
+                                            </Button>
+                                            <TextBlock Text="EQ ON" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <Button x:Name="BypassButton" Style="{StaticResource StencilButton}" Click="BypassButton_Click"
+                                                    ToolTip="Master bypass: switch off all sound processing for the purest sound">
+                                                <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconBypass}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.6"/></Canvas></Viewbox>
+                                            </Button>
+                                            <TextBlock Text="BYPASS" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <StackPanel Canvas.Left="392" Canvas.Top="116" Orientation="Horizontal"
+                                                ToolTip="The compressor arrives in Milestone 7">
+                                        <StackPanel Width="46" Margin="0,0,4,0"><local:Knob Width="46" Height="46" IsEnabled="False" Value="0.4"/><TextBlock Text="THRESH" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
+                                        <StackPanel Width="46" Margin="0,0,4,0"><local:Knob Width="46" Height="46" IsEnabled="False" Value="0.3"/><TextBlock Text="RATIO" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
+                                        <StackPanel Width="46" Margin="0,0,4,0"><local:Knob Width="46" Height="46" IsEnabled="False" Value="0.2"/><TextBlock Text="ATTACK" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
+                                        <StackPanel Width="46"><local:Knob Width="46" Height="46" IsEnabled="False" Value="0.55"/><TextBlock Text="RELEASE" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
+                                    </StackPanel>
+                                </Canvas>
+                            </Grid>
+                        </Border>
+
+                        <!-- ===================== PLAYLIST DECK ===================== -->
+                        <Border x:Name="PlaylistSeam" Style="{StaticResource Seam}"/>
+                        <Border x:Name="PlaylistDeck" Style="{StaticResource Faceplate}" Width="600" Height="300">
+                            <Grid>
+                                <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
+                                <Canvas>
+                                    <Button x:Name="PlaylistFold" Canvas.Right="6" Canvas.Top="6" Style="{StaticResource FoldTab}"
+                                            Click="PlaylistFold_Click" ToolTip="Fold away the playlist (Ctrl+2)">
+                                        <Path Data="{StaticResource ChevronUp}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
+                                    </Button>
+
+                                    <!-- Context row: tools for the list on show, and search -->
+                                    <DockPanel Canvas.Left="18" Canvas.Top="8" Width="540" Height="26" LastChildFill="False">
+                                        <TextBox x:Name="SearchBox" DockPanel.Dock="Right" Width="160" Style="{StaticResource GlassTextBox}"
+                                                 Tag="SEARCH" TextChanged="SearchBox_TextChanged" KeyDown="SearchBox_KeyDown"
+                                                 ToolTip="Filter the list (Ctrl+F). In Radio and Podcasts, press Enter to search online"/>
+
+                                        <StackPanel x:Name="PlaylistTools" DockPanel.Dock="Left" Orientation="Horizontal">
+                                            <ComboBox x:Name="PlaylistCombo" Width="150" Margin="0,0,6,0" Style="{StaticResource GlassCombo}"
+                                                      Tag="UNSAVED LIST" SelectionChanged="PlaylistCombo_SelectionChanged" ToolTip="Pick a saved playlist to open it"/>
+                                            <Button Style="{StaticResource TextKey}" Content="SAVE" Margin="0,0,4,0" Click="SavePlaylist_Click" ToolTip="Save into the playlist picked on the left"/>
+                                            <Button Style="{StaticResource TextKey}" Content="SAVE AS…" Margin="0,0,4,0" Click="SavePlaylistAs_Click" ToolTip="Save as a new playlist"/>
+                                            <Button Style="{StaticResource TextKey}" Content="DELETE" Click="DeletePlaylist_Click" ToolTip="Delete the saved playlist (your files are not touched)"/>
+                                        </StackPanel>
+                                        <StackPanel x:Name="QueueTools" DockPanel.Dock="Left" Orientation="Horizontal" Visibility="Collapsed">
+                                            <TextBlock x:Name="QueueInfo" Style="{StaticResource Engraved}" FontSize="11" VerticalAlignment="Center" Text="UP NEXT"/>
+                                        </StackPanel>
+                                        <StackPanel x:Name="LibraryTools" DockPanel.Dock="Left" Orientation="Horizontal" Visibility="Collapsed">
+                                            <Button Style="{StaticResource TextKey}" Content="FOLDERS…" Margin="0,0,4,0" Click="LibraryFolders_Click" ToolTip="Choose your music folders"/>
+                                            <Button Style="{StaticResource TextKey}" Content="RESCAN" Margin="0,0,4,0" Click="Rescan_Click" ToolTip="Find new, changed and removed songs"/>
+                                            <Button Style="{StaticResource TextKey}" Content="ADD TO PLAYLIST" Margin="0,0,8,0" Click="MenuAddToPlaylist_Click"/>
+                                            <TextBlock x:Name="LibraryInfo" Style="{StaticResource Engraved}" FontSize="11" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel x:Name="RadioTools" DockPanel.Dock="Left" Orientation="Horizontal" Visibility="Collapsed">
+                                            <Button x:Name="FavouritesKey" Style="{StaticResource TextKey}" Content="FAVOURITES" Margin="0,0,4,0" Click="RadioFavourites_Click"/>
+                                            <Button x:Name="TopStationsKey" Style="{StaticResource TextKey}" Content="TOP STATIONS" Margin="0,0,8,0" Click="RadioTop_Click"/>
+                                            <TextBlock x:Name="RadioInfo" Style="{StaticResource Engraved}" FontSize="11" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <StackPanel x:Name="PodcastTools" DockPanel.Dock="Left" Orientation="Horizontal" Visibility="Collapsed">
+                                            <Button x:Name="PodcastBackKey" Style="{StaticResource TextKey}" Content="◂ PODCASTS" Margin="0,0,4,0" Click="PodcastBack_Click" Visibility="Collapsed"/>
+                                            <Button Style="{StaticResource TextKey}" Content="REFRESH" Margin="0,0,4,0" Click="PodcastRefresh_Click" ToolTip="Check for new episodes"/>
+                                            <Button Style="{StaticResource TextKey}" Content="ADD FEED…" Margin="0,0,8,0" Click="PodcastAddFeed_Click" ToolTip="Subscribe by pasting a feed address"/>
+                                            <TextBlock x:Name="PodcastInfo" Style="{StaticResource Engraved}" FontSize="11" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DockPanel>
+
+                                    <!-- The list on glass. Double-click to play, right-click for more. -->
+                                    <Border Canvas.Left="18" Canvas.Top="40" Width="564" Height="206" Style="{StaticResource Glass}">
+                                        <Grid>
+                                            <Border Background="{StaticResource AmberAmbientBrush}" CornerRadius="3" IsHitTestVisible="False"/>
+                                            <ListView x:Name="SongList" Style="{StaticResource GlassList}" Padding="8,3,2,3"
+                                                      MouseDoubleClick="SongList_MouseDoubleClick" PreviewKeyDown="SongList_KeyDown">
+                                                <ListView.ContextMenu>
+                                                    <ContextMenu x:Name="SongMenu" Opened="SongMenu_Opened" FontSize="15">
+                                                        <MenuItem x:Name="MenuPlayNow" Header="Play now" Click="MenuPlayNow_Click" FontWeight="Bold"/>
+                                                        <MenuItem x:Name="MenuPlayNext" Header="Play next" Click="MenuPlayNext_Click"/>
+                                                        <MenuItem x:Name="MenuAddToQueue" Header="Add to queue" Click="MenuAddToQueue_Click"/>
+                                                        <MenuItem x:Name="MenuAddToPlaylist" Header="Add to playlist" Click="MenuAddToPlaylist_Click"/>
+                                                        <MenuItem x:Name="MenuFavourite" Header="Add to radio favourites" Click="MenuFavourite_Click"/>
+                                                        <MenuItem x:Name="MenuSubscribe" Header="Subscribe" Click="MenuSubscribe_Click"/>
+                                                        <MenuItem x:Name="MenuOpenPodcast" Header="Show episodes" Click="MenuOpenPodcast_Click"/>
+                                                        <Separator/>
+                                                        <MenuItem x:Name="MenuRemove" Header="Remove from this list" Click="MenuRemove_Click"/>
+                                                    </ContextMenu>
+                                                </ListView.ContextMenu>
+                                            </ListView>
+                                            <TextBlock x:Name="EmptyListText" Margin="14,10" FontSize="13" FontWeight="Medium" Foreground="{StaticResource AmberFaintBrush}"
+                                                       TextWrapping="Wrap" IsHitTestVisible="False" Visibility="Collapsed"/>
+                                            <Border Background="{StaticResource GlassGlareBrush}" CornerRadius="3" IsHitTestVisible="False"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <Border Canvas.Left="18" Canvas.Top="254" Width="564" Style="{StaticResource PinH}"/>
+
+                                    <!-- Bottom bar: list source keys, then the list buttons -->
+                                    <StackPanel Canvas.Left="18" Canvas.Top="262" Height="28" Orientation="Horizontal">
+                                        <RadioButton x:Name="PlaylistTab" Style="{StaticResource SourceKey}" GroupName="Source" Content="PLAYLIST" IsChecked="True" Checked="SourceTab_Checked"/>
+                                        <RadioButton x:Name="QueueTab" Style="{StaticResource SourceKey}" GroupName="Source" Content="QUEUE" Checked="SourceTab_Checked" ToolTip="Songs that play next, before the playlist continues"/>
+                                        <RadioButton x:Name="LibraryTab" Style="{StaticResource SourceKey}" GroupName="Source" Content="LIBRARY" Checked="SourceTab_Checked" ToolTip="Every song in your music folders"/>
+                                        <RadioButton x:Name="RadioTab" Style="{StaticResource SourceKey}" GroupName="Source" Content="RADIO" Checked="SourceTab_Checked" ToolTip="Internet radio"/>
+                                        <RadioButton x:Name="PodcastsTab" Style="{StaticResource SourceKey}" GroupName="Source" Content="PODCASTS" Checked="SourceTab_Checked"/>
+                                        <Border Style="{StaticResource PinV}" Height="20" Margin="6,0,10,0" VerticalAlignment="Center"/>
+                                        <Button x:Name="AddFilesButton" Style="{StaticResource StencilSmall}" Margin="0,0,4,0" Click="AddFiles_Click" ToolTip="Add files">
+                                            <Viewbox Style="{StaticResource IconSmall}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconAddFile}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.8"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="AddFolderButton" Style="{StaticResource StencilSmall}" Margin="0,0,4,0" Click="AddFolder_Click" ToolTip="Add a folder">
+                                            <Viewbox Style="{StaticResource IconSmall}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconAddFolder}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.8"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="RemoveButton" Style="{StaticResource StencilSmall}" Margin="0,0,4,0" Click="Remove_Click" ToolTip="Remove selected (Delete)">
+                                            <Viewbox Style="{StaticResource IconSmall}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconRemove}" Style="{StaticResource StrokeIcon}" StrokeThickness="2.2"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="ClearButton" Style="{StaticResource StencilSmall}" Margin="0,0,4,0" Click="Clear_Click" ToolTip="Clear the list">
+                                            <Viewbox Style="{StaticResource IconSmall}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconClear}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.8"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="ShuffleButton" Style="{StaticResource StencilSmall}" Margin="0,0,4,0" Click="ShuffleButton_Click" ToolTip="Shuffle (lit = on)">
+                                            <Viewbox Style="{StaticResource IconSmall}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconShuffle}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.8"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="RepeatButton" Style="{StaticResource StencilSmall}" Click="RepeatButton_Click" ToolTip="Repeat: off">
+                                            <Grid>
+                                                <Viewbox Style="{StaticResource IconSmall}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconRepeat}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.8"/></Canvas></Viewbox>
+                                                <TextBlock x:Name="RepeatOneMark" Text="1" FontSize="8" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Control}}" Visibility="Collapsed"/>
+                                            </Grid>
+                                        </Button>
+                                    </StackPanel>
+                                </Canvas>
+                            </Grid>
+                        </Border>
+
+                        <!-- ===================== SLIM STRIP (everything folded) ===================== -->
+                        <Border x:Name="SlimDeck" Style="{StaticResource Faceplate}" Width="600" Height="64" Visibility="Collapsed"
+                                MouseLeftButtonDown="Case_MouseLeftButtonDown">
+                            <Grid>
+                                <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
+                                <DockPanel Margin="14,0,8,0" LastChildFill="True">
+                                    <TextBlock DockPanel.Dock="Left" Width="82" VerticalAlignment="Center" Text="AMP PLAYER"
+                                               FontFamily="{StaticResource NameplateFont}" FontSize="9" Foreground="{StaticResource InkBrush}"/>
+                                    <Button x:Name="SlimUnfold" DockPanel.Dock="Right" Style="{StaticResource FoldTab}" VerticalAlignment="Center"
+                                            Margin="8,0,0,0" Click="MainFold_Click" ToolTip="Open the full player (Ctrl+M)">
+                                        <Path Data="{StaticResource ChevronDown}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
+                                    </Button>
+                                    <Grid DockPanel.Dock="Right" Width="38" Height="38" Margin="8,0,0,0">
+                                        <local:Knob x:Name="SlimVolume" Minimum="0" Maximum="1" DefaultValue="0.8" ValueChanged="SlimVolume_ValueChanged" ToolTip="Volume"/>
+                                    </Grid>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Style="{StaticResource StencilSlim}" Margin="0,0,4,0" Click="Previous_Click" ToolTip="Previous">
+                                            <Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconPrev}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button x:Name="SlimPlay" Style="{StaticResource StencilSlim}" Margin="0,0,4,0" Click="PlayPause_Click" ToolTip="Play / pause">
+                                            <Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path x:Name="SlimPlayIcon" Data="{StaticResource IconPlay}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
+                                        </Button>
+                                        <Button Style="{StaticResource StencilSlim}" Click="Next_Click" ToolTip="Next">
+                                            <Viewbox Width="16" Height="16"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconNext}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
+                                        </Button>
+                                    </StackPanel>
+                                    <Border DockPanel.Dock="Right" Style="{StaticResource PinV}" Height="28" Margin="8,0" VerticalAlignment="Center"/>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                                        <local:VuMeter x:Name="SlimVuLeft" Width="41" Height="26"/>
+                                        <local:VuMeter x:Name="SlimVuRight" Width="41" Height="26" Margin="4,0,0,0"/>
+                                    </StackPanel>
+                                    <Border Style="{StaticResource Glass}" Height="48" VerticalAlignment="Center" Padding="10,0">
+                                        <DockPanel VerticalAlignment="Center">
+                                            <TextBlock x:Name="SlimTime" DockPanel.Dock="Right" Style="{StaticResource DisplayGlow}" FontSize="15"
+                                                       VerticalAlignment="Center" Margin="8,0,0,0" Text="00:00"/>
+                                            <StackPanel>
+                                                <TextBlock x:Name="SlimTitle" Style="{StaticResource DisplayGlow}" FontSize="13" LineStackingStrategy="BlockLineHeight" LineHeight="18" Text="NO SONG LOADED"/>
+                                                <TextBlock x:Name="SlimArtist" FontSize="12" FontWeight="Medium" LineStackingStrategy="BlockLineHeight" LineHeight="16" Foreground="{StaticResource GoldTextBrush}"
+                                                           TextTrimming="CharacterEllipsis" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </Border>
+                                </DockPanel>
+                            </Grid>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Pull tabs for folded decks, hanging under the cabinet -->
+        <StackPanel x:Name="PullTabs" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,46,0">
+            <Button x:Name="PullEq" Style="{StaticResource PullTab}" Content="▾ EQ" Click="EqFold_Click" Visibility="Collapsed" ToolTip="Unfold the EQ"/>
+            <Button x:Name="PullPlaylist" Style="{StaticResource PullTab}" Content="▾ PLAYLIST" Click="PlaylistFold_Click" Visibility="Collapsed" ToolTip="Unfold the playlist"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

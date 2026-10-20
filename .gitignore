@@ -1,0 +1,14 @@
+# Build output
+bin/
+obj/
+
+# Visual Studio settings for your own PC
+.vs/
+*.user
+*.suo
+
+# The BASS engine is downloaded separately (check its licence before sharing it)
+bass.dll
+bass_fx.dll
+bassmix.dll
+basswasapi.dll

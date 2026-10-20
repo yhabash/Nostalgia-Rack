@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Basic settings: a Windows app (WinExe) built with WPF on .NET 10.
+       The "10.0.19041.0" part lets us talk to Windows' media panel (media keys, lock screen),
+       which needs Windows 10 version 2004 or newer. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>AmpPlayer</RootNamespace>
+    <AssemblyName>AmpPlayer</AssemblyName>
+    <!-- 64-bit, so it matches the 64-bit BASS files -->
+    <PlatformTarget>x64</PlatformTarget>
+    <Version>0.6.2</Version>
+  </PropertyGroup>
+
+  <!-- Libraries (Visual Studio downloads these automatically) -->
+  <ItemGroup>
+    <!-- C# wrappers around the BASS audio engine and its add-ons -->
+    <PackageReference Include="ManagedBass" Version="3.1.1" />
+    <PackageReference Include="ManagedBass.Fx" Version="3.1.1" />
+    <PackageReference Include="ManagedBass.Mix" Version="3.1.1" />
+    <PackageReference Include="ManagedBass.Wasapi" Version="3.1.1" />
+    <!-- TagLib#: reads song titles, artists, albums and lengths from the files' tags -->
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+    <!-- SQLite: the library database (library.db) -->
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
+    <!-- SQLite's engine itself. Microsoft.Data.Sqlite brings 2.1.11, which has a known security
+         problem (GHSA-2m69-gcr7-jv3q); this line asks for the fixed 2.1.13 instead. -->
+    <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="2.1.13" />
+    <!-- (DPAPI, used for the Podcast Index key and secret, is built into .NET 10 on Windows; no package needed.) -->
+  </ItemGroup>
+
+  <!-- The skin's fonts, built into AmpPlayer.exe (all free, SIL Open Font License) -->
+  <ItemGroup>
+    <Resource Include="Skin\Fonts\*.ttf" />
+  </ItemGroup>
+
+  <!-- The real engine files. You download them from un4seen.com (the x64 versions) and put them in this folder.
+       These lines copy them next to AmpPlayer.exe every time you build. -->
+  <ItemGroup>
+    <None Include="bass.dll" Condition="Exists('bass.dll')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="bass_fx.dll" Condition="Exists('bass_fx.dll')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="bassmix.dll" Condition="Exists('bassmix.dll')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="basswasapi.dll" Condition="Exists('basswasapi.dll')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

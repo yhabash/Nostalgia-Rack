@@ -1,0 +1,826 @@
+<!--
+  Skin.xaml: the champagne & black glass look (design Version B), shared by every window.
+  Colours, fonts, the brushed metal, smoked glass and rosewood, and the styles for every
+  control (stencil buttons, text keys, EQ sliders, knobs, glass lists, drop-downs…).
+  Change a colour here and it changes everywhere.
+-->
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:AmpPlayer">
+
+    <!-- ===================== Fonts (embedded in the app, free SIL Open Font Licence) ===================== -->
+    <FontFamily x:Key="NameplateFont">pack://application:,,,/Skin/Fonts/#Krona One</FontFamily>
+    <FontFamily x:Key="DisplayFont">pack://application:,,,/Skin/Fonts/#Michroma</FontFamily>
+    <FontFamily x:Key="LabelFont">pack://application:,,,/Skin/Fonts/#Amp Jost</FontFamily>
+    <FontFamily x:Key="SignatureFont">pack://application:,,,/Skin/Fonts/#Great Vibes</FontFamily>
+
+    <!-- ===================== Colours ===================== -->
+    <Color x:Key="InkColor">#2E2516</Color>
+    <Color x:Key="GoldColor">#B8955A</Color>
+    <Color x:Key="LitColor">#F7F7A6</Color>
+    <SolidColorBrush x:Key="InkBrush" Color="#2E2516"/>
+    <SolidColorBrush x:Key="InkSoftBrush" Color="#4A3C26"/>
+    <SolidColorBrush x:Key="StencilBrush" Color="#3F3220"/>
+    <SolidColorBrush x:Key="GoldBrush" Color="#B8955A"/>
+    <SolidColorBrush x:Key="GoldTextBrush" Color="#D8B77C"/>
+    <SolidColorBrush x:Key="AmberBrush" Color="#FFCF86"/>
+    <SolidColorBrush x:Key="AmberBrightBrush" Color="#FFD35C"/>
+    <SolidColorBrush x:Key="AmberSoftBrush" Color="#E3BF85"/>
+    <SolidColorBrush x:Key="AmberDimBrush" Color="#C9A468"/>
+    <SolidColorBrush x:Key="AmberFaintBrush" Color="#A88A58"/>
+    <SolidColorBrush x:Key="LitBrush" Color="#F7F7A6"/>
+
+    <!-- ===================== Surfaces ===================== -->
+
+    <!-- Champagne brushed aluminium: a soft gradient… -->
+    <LinearGradientBrush x:Key="ChampBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#F0E6CF" Offset="0"/>
+        <GradientStop Color="#DDCFAE" Offset="0.42"/>
+        <GradientStop Color="#CBBB94" Offset="0.58"/>
+        <GradientStop Color="#E2D5B6" Offset="1"/>
+    </LinearGradientBrush>
+    <!-- …with fine horizontal hairlines on top, repeating every 3 pixels -->
+    <DrawingBrush x:Key="HairlineBrush" TileMode="Tile" Viewport="0,0,3,3" ViewportUnits="Absolute" Stretch="None">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="#12FFFAEB"><GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,3,1"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#0A3C280A"><GeometryDrawing.Geometry><RectangleGeometry Rect="0,1,3,1"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#00000000"><GeometryDrawing.Geometry><RectangleGeometry Rect="0,2,3,1"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <!-- Dark rosewood case -->
+    <LinearGradientBrush x:Key="RoseBrush" StartPoint="0,0" EndPoint="1,0">
+        <GradientStop Color="#2E1710" Offset="0"/>
+        <GradientStop Color="#4D2618" Offset="0.25"/>
+        <GradientStop Color="#3C1D12" Offset="0.5"/>
+        <GradientStop Color="#552C1B" Offset="0.75"/>
+        <GradientStop Color="#2A140D" Offset="1"/>
+    </LinearGradientBrush>
+    <DrawingBrush x:Key="GrainBrush" TileMode="Tile" Viewport="0,0,11,40" ViewportUnits="Absolute" Stretch="None">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="#24000000"><GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,1,40"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#0DFFC8AA"><GeometryDrawing.Geometry><RectangleGeometry Rect="5,0,1,40"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#00000000"><GeometryDrawing.Geometry><RectangleGeometry Rect="10,0,1,40"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+
+    <!-- Smoked black glass -->
+    <LinearGradientBrush x:Key="SmokeBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#121314" Offset="0"/>
+        <GradientStop Color="#060707" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="GlassGlareBrush" StartPoint="0,0" EndPoint="0.45,1">
+        <GradientStop Color="#12FFFFFF" Offset="0"/>
+        <GradientStop Color="#00FFFFFF" Offset="0.38"/>
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="AmberAmbientBrush" Center="0.25,0.6" GradientOrigin="0.25,0.6" RadiusX="0.55" RadiusY="0.9">
+        <GradientStop Color="#17FFAA3C" Offset="0"/>
+        <GradientStop Color="#00FFAA3C" Offset="1"/>
+    </RadialGradientBrush>
+
+    <!-- Button caps -->
+    <LinearGradientBrush x:Key="CapBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#F6EEDB" Offset="0"/>
+        <GradientStop Color="#D9CAA5" Offset="1"/>
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="CapPressedBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#D3C39C" Offset="0"/>
+        <GradientStop Color="#E6DABD" Offset="1"/>
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="LitHaloBrush">
+        <GradientStop Color="#80F7F7A6" Offset="0"/>
+        <GradientStop Color="#00F7F7A6" Offset="0.62"/>
+    </RadialGradientBrush>
+    <DropShadowEffect x:Key="LitGlow" Color="#F7F7A6" ShadowDepth="0" BlurRadius="8" Opacity="1"/>
+    <DropShadowEffect x:Key="AmberGlow" Color="#FFAA3C" ShadowDepth="0" BlurRadius="6" Opacity="0.65"/>
+    <DropShadowEffect x:Key="CapShadow" Color="#000000" ShadowDepth="2" Direction="270" BlurRadius="5" Opacity="0.35"/>
+
+    <!-- Ridged champagne slider cap -->
+    <DrawingBrush x:Key="RidgeBrush" TileMode="Tile" Viewport="0,0,4,3" ViewportUnits="Absolute" Stretch="None">
+        <DrawingBrush.Drawing>
+            <DrawingGroup>
+                <GeometryDrawing Brush="#2E503C19"><GeometryDrawing.Geometry><RectangleGeometry Rect="0,0,4,1"/></GeometryDrawing.Geometry></GeometryDrawing>
+                <GeometryDrawing Brush="#00000000"><GeometryDrawing.Geometry><RectangleGeometry Rect="0,1,4,2"/></GeometryDrawing.Geometry></GeometryDrawing>
+            </DrawingGroup>
+        </DrawingBrush.Drawing>
+    </DrawingBrush>
+    <LinearGradientBrush x:Key="SliderCapBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#F8F0DE" Offset="0"/>
+        <GradientStop Color="#DCCDAA" Offset="0.45"/>
+        <GradientStop Color="#C4B388" Offset="0.55"/>
+        <GradientStop Color="#E8DCC0" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- ===================== Panels ===================== -->
+
+    <!-- A champagne faceplate (one deck). Put content in a Grid inside it. -->
+    <Style x:Key="Faceplate" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource ChampBrush}"/>
+        <Setter Property="CornerRadius" Value="2"/>
+        <Setter Property="BorderBrush" Value="#86764F"/>
+        <Setter Property="BorderThickness" Value="0,0,0,1"/>
+    </Style>
+
+    <!-- Smoked glass window with a thin gold edge -->
+    <Style x:Key="Glass" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource SmokeBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource GoldBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="3"/>
+    </Style>
+
+    <!-- Gold pinstripes -->
+    <Style x:Key="PinH" TargetType="Border">
+        <Setter Property="Height" Value="1"/>
+        <Setter Property="Background" Value="{StaticResource GoldBrush}"/>
+        <Setter Property="Opacity" Value="0.7"/>
+    </Style>
+    <Style x:Key="PinV" TargetType="Border">
+        <Setter Property="Width" Value="1"/>
+        <Setter Property="Background" Value="{StaticResource GoldBrush}"/>
+        <Setter Property="Opacity" Value="0.7"/>
+    </Style>
+
+    <!-- The dark seam between two decks -->
+    <Style x:Key="Seam" TargetType="Border">
+        <Setter Property="Height" Value="5"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                    <GradientStop Color="#0D0B09" Offset="0"/>
+                    <GradientStop Color="#1C1712" Offset="1"/>
+                </LinearGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- A small gold screw head -->
+    <Style x:Key="Screw" TargetType="Ellipse">
+        <Setter Property="Width" Value="9"/>
+        <Setter Property="Height" Value="9"/>
+        <Setter Property="Fill">
+            <Setter.Value>
+                <RadialGradientBrush GradientOrigin="0.35,0.3" Center="0.35,0.3" RadiusX="0.7" RadiusY="0.7">
+                    <GradientStop Color="#FFF7E3" Offset="0"/>
+                    <GradientStop Color="#B49D6C" Offset="0.55"/>
+                    <GradientStop Color="#6F5C36" Offset="1"/>
+                </RadialGradientBrush>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== Text ===================== -->
+
+    <!-- Engraved uppercase labels on the metal -->
+    <Style x:Key="Engraved" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="FontSize" Value="11.5"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+        <Setter Property="Effect">
+            <Setter.Value><DropShadowEffect Color="#FFFAE6" ShadowDepth="1" Direction="270" BlurRadius="0" Opacity="0.7"/></Setter.Value>
+        </Setter>
+    </Style>
+    <Style x:Key="EngravedTiny" TargetType="TextBlock" BasedOn="{StaticResource Engraved}">
+        <Setter Property="FontSize" Value="10"/>
+    </Style>
+
+    <!-- Amber display text on the glass -->
+    <Style x:Key="DisplayGlow" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource DisplayFont}"/>
+        <Setter Property="Foreground" Value="{StaticResource AmberBrush}"/>
+        <Setter Property="Effect" Value="{StaticResource AmberGlow}"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+    <Style x:Key="DisplaySmall" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="Foreground" Value="{StaticResource AmberDimBrush}"/>
+        <Setter Property="FontSize" Value="11.5"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+        <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+    </Style>
+
+    <!-- ===================== Icons (drawn in a 24 × 24 box) ===================== -->
+
+    <Style x:Key="Icon" TargetType="Viewbox">
+        <Setter Property="Width" Value="20"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="IsHitTestVisible" Value="False"/>
+    </Style>
+    <Style x:Key="IconSmall" TargetType="Viewbox" BasedOn="{StaticResource Icon}">
+        <Setter Property="Width" Value="15"/>
+        <Setter Property="Height" Value="15"/>
+    </Style>
+    <!-- Icon shapes take their colour from the button: dark when off, pale yellow when lit -->
+    <Style x:Key="FillIcon" TargetType="Path">
+        <Setter Property="Fill" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Control}}"/>
+    </Style>
+    <Style x:Key="StrokeIcon" TargetType="Path">
+        <Setter Property="Stroke" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Control}}"/>
+        <Setter Property="StrokeThickness" Value="1.7"/>
+        <Setter Property="StrokeLineJoin" Value="Round"/>
+        <Setter Property="StrokeStartLineCap" Value="Round"/>
+        <Setter Property="StrokeEndLineCap" Value="Round"/>
+    </Style>
+
+    <Geometry x:Key="IconPrev">M6,6 H8 V18 H6 Z M18,6 V18 L9,12 Z</Geometry>
+    <Geometry x:Key="IconNext">M16,6 H18 V18 H16 Z M6,6 V18 L15,12 Z</Geometry>
+    <Geometry x:Key="IconPlay">M8,5.5 V18.5 L19,12 Z</Geometry>
+    <Geometry x:Key="IconPause">M7,5 H10.5 V19 H7 Z M13.5,5 H17 V19 H13.5 Z</Geometry>
+    <Geometry x:Key="IconStop">M6.5,6.5 H17.5 V17.5 H6.5 Z</Geometry>
+    <Geometry x:Key="IconBackArc">M12,4.5 a7.5,7.5 0 1 1 -7.1,5.1</Geometry>
+    <Geometry x:Key="IconBackHead">M3.6,5.4 L5.1,10.3 L9.7,8.4 Z</Geometry>
+    <Geometry x:Key="IconFwdArc">M12,4.5 a7.5,7.5 0 1 0 7.1,5.1</Geometry>
+    <Geometry x:Key="IconFwdHead">M20.4,5.4 L18.9,10.3 L14.3,8.4 Z</Geometry>
+    <Geometry x:Key="IconEqLines">M6,4 V20 M12,4 V20 M18,4 V20</Geometry>
+    <Geometry x:Key="IconEqKnobs">M4,12 H8 V15 H4 Z M10,7 H14 V10 H10 Z M16,14 H20 V17 H16 Z</Geometry>
+    <Geometry x:Key="IconBypass">M3,16 H9 M15,16 H21 M9,13 H15 V19 H9 Z M5,16 V8 H19 V16</Geometry>
+    <Geometry x:Key="IconAddFile">M7,3 H14 L18,7 V21 H7 Z M14,3 V7 H18 M12.5,11 V17 M9.5,14 H15.5</Geometry>
+    <Geometry x:Key="IconAddFolder">M3,6 H9 L11,8 H21 V19 H3 Z M12,11 V17 M9,14 H15</Geometry>
+    <Geometry x:Key="IconRemove">M6,12 H18</Geometry>
+    <Geometry x:Key="IconClear">M4,7 H20 M10,7 V4.5 H14 V7 M6.5,7 L7.5,20 H16.5 L17.5,7 M10,11 V17 M14,11 V17</Geometry>
+    <Geometry x:Key="IconShuffle">M3,7 H7 L17,17 H21 M3,17 H7 L10,14 M14,10 L17,7 H21 M18,4 L21,7 L18,10 M18,14 L21,17 L18,20</Geometry>
+    <Geometry x:Key="IconRepeat">M5,11 V8 H18 M15,5 L18,8 L15,11 M19,13 V16 H6 M9,19 L6,16 L9,13</Geometry>
+    <Geometry x:Key="ChevronUp">M3,9 L7,5 L11,9</Geometry>
+    <Geometry x:Key="ChevronDown">M3,5 L7,9 L11,5</Geometry>
+
+    <!-- ===================== Backlit stencil push button (B1) ===================== -->
+    <!--
+      A square champagne key. The symbol is "cut" into it: dark when off. When the button is
+      lit (local:SkinProps.Lit="True"), pale yellow light shines through the symbol's shape.
+      Pressed: it sinks 2 pixels.
+    -->
+    <ControlTemplate x:Key="StencilTemplate" TargetType="ButtonBase">
+        <Grid x:Name="Root" Background="Transparent">
+            <Border x:Name="Ledge" CornerRadius="3" Background="#7A6A45" Margin="0,2,0,-2"/>
+            <Border x:Name="Cap" CornerRadius="3" Background="{StaticResource CapBrush}"
+                    BorderBrush="#A8956A" BorderThickness="0,0,0,2" Effect="{StaticResource CapShadow}">
+                <Border CornerRadius="3,3,0,0" BorderBrush="#FFFAF0" BorderThickness="0,1,0,0"/>
+            </Border>
+            <Border x:Name="Halo" CornerRadius="3" Background="{StaticResource LitHaloBrush}" Opacity="0"/>
+            <ContentPresenter x:Name="Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"
+                              Margin="{TemplateBinding Padding}"/>
+            <Border x:Name="FocusEdge" CornerRadius="3" BorderBrush="{StaticResource GoldBrush}" BorderThickness="1" Opacity="0"/>
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Root" Property="RenderTransform">
+                    <Setter.Value><TranslateTransform Y="2"/></Setter.Value>
+                </Setter>
+                <Setter TargetName="Ledge" Property="Visibility" Value="Hidden"/>
+                <Setter TargetName="Cap" Property="Background" Value="{StaticResource CapPressedBrush}"/>
+                <Setter TargetName="Cap" Property="Effect" Value="{x:Null}"/>
+            </Trigger>
+            <Trigger Property="local:SkinProps.Lit" Value="True">
+                <Setter TargetName="Halo" Property="Opacity" Value="1"/>
+                <Setter Property="Foreground" Value="{StaticResource LitBrush}"/>
+                <Setter TargetName="Symbol" Property="Effect" Value="{StaticResource LitGlow}"/>
+            </Trigger>
+            <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="FocusEdge" Property="Opacity" Value="1"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter TargetName="Root" Property="Opacity" Value="0.5"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="StencilButton" TargetType="Button">
+        <Setter Property="Template" Value="{StaticResource StencilTemplate}"/>
+        <Setter Property="Width" Value="44"/>
+        <Setter Property="Height" Value="44"/>
+        <Setter Property="Foreground" Value="{StaticResource StencilBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    </Style>
+    <Style x:Key="StencilSmall" TargetType="Button" BasedOn="{StaticResource StencilButton}">
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="28"/>
+    </Style>
+    <Style x:Key="StencilSlim" TargetType="Button" BasedOn="{StaticResource StencilButton}">
+        <Setter Property="Width" Value="32"/>
+        <Setter Property="Height" Value="32"/>
+    </Style>
+
+    <!-- A champagne key with engraved text (SAVE, RESCAN…) -->
+    <Style x:Key="TextKey" TargetType="Button">
+        <Setter Property="Template" Value="{StaticResource StencilTemplate}"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="Padding" Value="7,0"/>
+        <Setter Property="Foreground" Value="{StaticResource StencilBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    </Style>
+
+    <!-- The list-source keys (PLAYLIST, QUEUE…): only one is pressed in, and its label lights -->
+    <Style x:Key="SourceKey" TargetType="RadioButton">
+        <Setter Property="Height" Value="28"/>
+        <Setter Property="Padding" Value="7,0"/>
+        <Setter Property="Margin" Value="0,0,4,0"/>
+        <Setter Property="Foreground" Value="{StaticResource StencilBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Grid x:Name="Root" Background="Transparent">
+                        <Border x:Name="Ledge" CornerRadius="3" Background="#7A6A45" Margin="0,2,0,-2"/>
+                        <Border x:Name="Cap" CornerRadius="3" Background="{StaticResource CapBrush}"
+                                BorderBrush="#A8956A" BorderThickness="0,0,0,2" Effect="{StaticResource CapShadow}">
+                            <Border CornerRadius="3,3,0,0" BorderBrush="#FFFAF0" BorderThickness="0,1,0,0"/>
+                        </Border>
+                        <Border x:Name="Halo" CornerRadius="3" Background="{StaticResource LitHaloBrush}" Opacity="0"/>
+                        <ContentPresenter x:Name="Label" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Margin="{TemplateBinding Padding}"/>
+                        <Border x:Name="FocusEdge" CornerRadius="3" BorderBrush="{StaticResource GoldBrush}" BorderThickness="1" Opacity="0"/>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Halo" Property="Opacity" Value="1"/>
+                            <Setter TargetName="Root" Property="RenderTransform">
+                                <Setter.Value><TranslateTransform Y="1"/></Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="{StaticResource LitBrush}"/>
+                            <Setter TargetName="Label" Property="Effect" Value="{StaticResource LitGlow}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Cap" Property="Background" Value="{StaticResource CapPressedBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="FocusEdge" Property="Opacity" Value="1"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The small fold tab in each deck's corner -->
+    <Style x:Key="FoldTab" TargetType="Button">
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="17"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Foreground" Value="{StaticResource StencilBrush}"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Cap" CornerRadius="2" Background="{StaticResource CapBrush}"
+                            BorderBrush="#A8956A" BorderThickness="0,0,0,1" Effect="{StaticResource CapShadow}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Cap" Property="Background" Value="{StaticResource CapPressedBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Cap" Property="BorderBrush" Value="{StaticResource GoldBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- The pull tab that hangs under the cabinet for a folded deck ("▾ EQ") -->
+    <Style x:Key="PullTab" TargetType="Button">
+        <Setter Property="Height" Value="22"/>
+        <Setter Property="Padding" Value="10,0"/>
+        <Setter Property="Margin" Value="0,0,8,0"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Foreground" Value="{StaticResource StencilBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="FontSize" Value="11"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Cap" CornerRadius="0,0,4,4" BorderBrush="#A8956A" BorderThickness="0,0,0,1"
+                            Padding="{TemplateBinding Padding}" Effect="{StaticResource CapShadow}">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <GradientStop Color="#D9CAA5" Offset="0"/>
+                                <GradientStop Color="#F0E6CF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <ContentPresenter VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Cap" Property="Background" Value="{StaticResource CapPressedBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Tiny keys on the wooden side of the case: settings, minimise, close -->
+    <Style x:Key="CaseKey" TargetType="Button" BasedOn="{StaticResource FoldTab}">
+        <Setter Property="Width" Value="26"/>
+        <Setter Property="Height" Value="20"/>
+        <Setter Property="Margin" Value="0,0,0,7"/>
+        <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
+        <Setter Property="FontSize" Value="13"/>
+    </Style>
+
+    <!-- ===================== Sliders ===================== -->
+
+    <Style x:Key="InvisibleRepeat" TargetType="RepeatButton">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="IsTabStop" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RepeatButton"><Border Background="Transparent"/></ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- EQ slider: a dark slot cut into the metal, with a ridged champagne cap -->
+    <Style x:Key="EqSlider" TargetType="Slider">
+        <Setter Property="Orientation" Value="Vertical"/>
+        <Setter Property="Width" Value="28"/>
+        <Setter Property="Height" Value="112"/>
+        <Setter Property="Minimum" Value="-12"/>
+        <Setter Property="Maximum" Value="12"/>
+        <Setter Property="SmallChange" Value="0.5"/>
+        <Setter Property="LargeChange" Value="3"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="AutoToolTipPlacement" Value="TopLeft"/>
+        <Setter Property="AutoToolTipPrecision" Value="1"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid Background="Transparent">
+                        <Border Width="4" HorizontalAlignment="Center" Margin="0,6" CornerRadius="2" Background="#0B0A09"
+                                BorderBrush="#FFFAE6" BorderThickness="0,0,0,1"/>
+                        <Track x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="True">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="Slider.DecreaseLarge" Style="{StaticResource InvisibleRepeat}"/>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource InvisibleRepeat}"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Width="24" Height="14" Focusable="False">
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Grid Effect="{StaticResource CapShadow}">
+                                                <Border CornerRadius="2" Background="{StaticResource SliderCapBrush}"
+                                                        BorderBrush="#8F7D55" BorderThickness="0,0,0,1"/>
+                                                <Border CornerRadius="2" Background="{StaticResource RidgeBrush}"/>
+                                                <Border Height="2" Margin="2,0" CornerRadius="1" Background="#3A2F1C" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="Opacity" Value="0.9"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Seek line on the glass: amber where you are, faint ahead; click or drag to jump -->
+    <Style x:Key="SeekSlider" TargetType="Slider">
+        <Setter Property="Height" Value="10"/>
+        <Setter Property="Minimum" Value="0"/>
+        <Setter Property="Maximum" Value="1"/>
+        <Setter Property="IsMoveToPointEnabled" Value="True"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid Background="Transparent">
+                        <Border Height="2" VerticalAlignment="Center" Background="#33FFCF86" CornerRadius="1"/>
+                        <Track x:Name="PART_Track">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="Slider.DecreaseLarge" Focusable="False">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Grid Background="Transparent">
+                                                <Border Height="2" VerticalAlignment="Center" CornerRadius="1"
+                                                        Background="{StaticResource AmberBrush}" Effect="{StaticResource AmberGlow}"/>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="Slider.IncreaseLarge" Style="{StaticResource InvisibleRepeat}"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Width="6" Height="6">
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Ellipse Fill="{StaticResource AmberBrightBrush}" Effect="{StaticResource AmberGlow}"/>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Knobs: drawn by Knob.cs; this just sets the defaults -->
+    <Style TargetType="local:Knob">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+    </Style>
+
+    <!-- ===================== Glass text box (search) and drop-down ===================== -->
+
+    <Style x:Key="GlassTextBox" TargetType="TextBox">
+        <Setter Property="Foreground" Value="{StaticResource AmberBrush}"/>
+        <Setter Property="CaretBrush" Value="{StaticResource AmberBrush}"/>
+        <Setter Property="SelectionBrush" Value="#FFCF86"/>
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Height" Value="26"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border Style="{StaticResource Glass}" Padding="22,0,6,0">
+                        <Grid>
+                            <Path Data="M10.5,4.5 a6,6 0 1 1 -0.01,0 Z M15,15 L20,20" Stroke="{StaticResource GoldTextBrush}" StrokeThickness="2"
+                                  Width="11" Height="11" Stretch="Uniform" HorizontalAlignment="Left" Margin="-16,0,0,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="Placeholder" Text="{TemplateBinding Tag}" Foreground="{StaticResource AmberFaintBrush}"
+                                       FontSize="11" FontWeight="Medium" VerticalAlignment="Center" IsHitTestVisible="False" Visibility="Collapsed"
+                                      />
+                            <ScrollViewer x:Name="PART_ContentHost" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="GlassComboItem" TargetType="ComboBoxItem">
+        <Setter Property="Foreground" Value="{StaticResource AmberSoftBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="FontSize" Value="13"/>
+        <Setter Property="Padding" Value="8,3"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border x:Name="Back" Background="Transparent" Padding="{TemplateBinding Padding}">
+                        <ContentPresenter/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="#33FFCF86"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Foreground" Value="{StaticResource AmberBrightBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Amber drop-down on smoked glass. Tag = the text shown when nothing is picked. -->
+    <Style x:Key="GlassCombo" TargetType="ComboBox">
+        <Setter Property="Foreground" Value="{StaticResource AmberBrush}"/>
+        <Setter Property="FontFamily" Value="{StaticResource DisplayFont}"/>
+        <Setter Property="FontSize" Value="10.5"/>
+        <Setter Property="Height" Value="26"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource GlassComboItem}"/>
+        <Setter Property="MaxDropDownHeight" Value="260"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBox">
+                    <Grid>
+                        <ToggleButton Focusable="False" ClickMode="Press"
+                                      IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <ToggleButton.Template>
+                                <ControlTemplate TargetType="ToggleButton">
+                                    <Border Style="{StaticResource Glass}"/>
+                                </ControlTemplate>
+                            </ToggleButton.Template>
+                        </ToggleButton>
+                        <ContentPresenter IsHitTestVisible="False" Margin="9,0,22,0" VerticalAlignment="Center" HorizontalAlignment="Left"
+                                          Content="{TemplateBinding SelectionBoxItem}"
+                                          ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"/>
+                        <TextBlock x:Name="Placeholder" Text="{TemplateBinding Tag}" IsHitTestVisible="False" Visibility="Collapsed"
+                                   Margin="9,0,22,0" VerticalAlignment="Center" Foreground="{StaticResource AmberFaintBrush}"
+                                   FontFamily="{StaticResource LabelFont}" FontSize="11" FontWeight="Medium"/>
+                        <Path Data="M0,0 L4,4 L8,0" Stroke="{StaticResource GoldTextBrush}" StrokeThickness="1.4" IsHitTestVisible="False"
+                              HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,9,0"/>
+                        <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
+                               Focusable="False" PopupAnimation="Fade">
+                            <Border Background="#0E0D0C" BorderBrush="{StaticResource GoldBrush}" BorderThickness="1" CornerRadius="3"
+                                    MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}" Margin="0,2,0,0">
+                                <ScrollViewer CanContentScroll="True">
+                                    <ItemsPresenter/>
+                                </ScrollViewer>
+                            </Border>
+                        </Popup>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="SelectedItem" Value="{x:Null}">
+                            <Setter TargetName="Placeholder" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== Glass scroll bar (champagne cap in a dark slot) ===================== -->
+
+    <Style x:Key="GlassScrollBar" TargetType="ScrollBar">
+        <Setter Property="Width" Value="12"/>
+        <Setter Property="MinWidth" Value="12"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid Background="Transparent">
+                        <Border Width="4" HorizontalAlignment="Center" Margin="0,4" CornerRadius="2" Background="#0B0A09"
+                                BorderBrush="#33B8955A" BorderThickness="1"/>
+                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand" Style="{StaticResource InvisibleRepeat}"/>
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageDownCommand" Style="{StaticResource InvisibleRepeat}"/>
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb MinHeight="24">
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Grid Width="10">
+                                                <Border CornerRadius="2" BorderBrush="#8F7D55" BorderThickness="0,0,0,1">
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                                            <GradientStop Color="#F8F0DE" Offset="0"/>
+                                                            <GradientStop Color="#DCCDAA" Offset="0.45"/>
+                                                            <GradientStop Color="#C4B388" Offset="0.55"/>
+                                                            <GradientStop Color="#E8DCC0" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                </Border>
+                                                <Border CornerRadius="2" Background="{StaticResource RidgeBrush}"/>
+                                            </Grid>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== The amber song list on glass ===================== -->
+
+    <Style x:Key="GlassListItem" TargetType="ListViewItem">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListViewItem">
+                    <Border x:Name="Back" Background="Transparent" BorderBrush="#12D8B77C" BorderThickness="0,0,0,1" Height="20">
+                        <ContentPresenter VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="#10FFCF86"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter TargetName="Back" Property="Background" Value="#2CFFCF86"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- One row: ▶ marker · number · title · artist · album · format tag · length -->
+    <DataTemplate x:Key="SongRow" DataType="{x:Type local:PlaylistItem}">
+        <Grid x:Name="Row" TextElement.FontFamily="{StaticResource LabelFont}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="28"/>
+                <ColumnDefinition Width="11*"/>
+                <ColumnDefinition Width="9*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="52"/>
+            </Grid.ColumnDefinitions>
+            <Path x:Name="Marker" Grid.Column="0" Data="M0,0 L7,4 L0,8 Z" Fill="{StaticResource AmberBrightBrush}"
+                  VerticalAlignment="Center" HorizontalAlignment="Center" Visibility="Hidden" Effect="{StaticResource AmberGlow}"/>
+            <TextBlock x:Name="Num" Grid.Column="1" Text="{Binding Number, StringFormat={}{0:00}}" FontSize="11"
+                       Foreground="{StaticResource AmberFaintBrush}" TextAlignment="Right" Margin="0,0,6,0" VerticalAlignment="Center"/>
+            <TextBlock x:Name="Title" Grid.Column="2" Text="{Binding Title}" FontSize="13.5"
+                       Foreground="{StaticResource AmberSoftBrush}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0" VerticalAlignment="Center"/>
+            <TextBlock x:Name="Artist" Grid.Column="3" Text="{Binding ArtistAlbum}" FontSize="12.5"
+                       Foreground="{StaticResource AmberFaintBrush}" TextTrimming="CharacterEllipsis" Margin="0,0,8,0" VerticalAlignment="Center"/>
+            <Border x:Name="Tag" Grid.Column="4" BorderBrush="#59D8B77C" BorderThickness="1" CornerRadius="2" Padding="4,0"
+                    VerticalAlignment="Center" Margin="0,0,8,0">
+                <TextBlock Text="{Binding Format}" FontSize="10" FontWeight="Medium" Foreground="{StaticResource AmberDimBrush}"/>
+            </Border>
+            <TextBlock x:Name="Length" Grid.Column="5" Text="{Binding DurationText}" FontSize="12.5"
+                       Foreground="{StaticResource AmberDimBrush}" TextAlignment="Right" Margin="0,0,4,0" VerticalAlignment="Center"/>
+        </Grid>
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding IsCurrent}" Value="True">
+                <Setter TargetName="Marker" Property="Visibility" Value="Visible"/>
+                <Setter TargetName="Title" Property="Foreground" Value="{StaticResource AmberBrightBrush}"/>
+                <Setter TargetName="Title" Property="Effect" Value="{StaticResource AmberGlow}"/>
+                <Setter TargetName="Num" Property="Foreground" Value="{StaticResource AmberBrightBrush}"/>
+                <Setter TargetName="Length" Property="Foreground" Value="{StaticResource AmberBrightBrush}"/>
+                <Setter TargetName="Artist" Property="Foreground" Value="{StaticResource AmberSoftBrush}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding HasError}" Value="True">
+                <Setter TargetName="Row" Property="Opacity" Value="0.5"/>
+                <Setter TargetName="Title" Property="FontStyle" Value="Italic"/>
+                <Setter TargetName="Row" Property="ToolTip" Value="This file could not be played or is missing"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Format}" Value="">
+                <Setter TargetName="Tag" Property="Visibility" Value="Collapsed"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <Style x:Key="GlassList" TargetType="ListView">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Foreground" Value="{StaticResource AmberSoftBrush}"/>
+        <Setter Property="ItemContainerStyle" Value="{StaticResource GlassListItem}"/>
+        <Setter Property="ItemTemplate" Value="{StaticResource SongRow}"/>
+        <Setter Property="SelectionMode" Value="Extended"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListView">
+                    <ScrollViewer Focusable="False" Padding="{TemplateBinding Padding}">
+                        <ScrollViewer.Resources>
+                            <Style TargetType="ScrollBar" BasedOn="{StaticResource GlassScrollBar}"/>
+                        </ScrollViewer.Resources>
+                        <ItemsPresenter/>
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ===================== Settings window controls (light, on champagne) ===================== -->
+
+    <Style x:Key="SettingLabel" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Foreground" Value="{StaticResource InkBrush}"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+        <Setter Property="Margin" Value="0,0,12,0"/>
+    </Style>
+    <Style x:Key="SettingHint" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource LabelFont}"/>
+        <Setter Property="FontSize" Value="10.5"/>
+        <Setter Property="Foreground" Value="{StaticResource InkSoftBrush}"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="Margin" Value="0,2,0,0"/>
+    </Style>
+    <Style x:Key="SettingHeader" TargetType="TextBlock" BasedOn="{StaticResource Engraved}">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="Margin" Value="0,16,0,8"/>
+        <Setter Property="FontWeight" Value="Medium"/>
+    </Style>
+</ResourceDictionary>
