@@ -182,6 +182,16 @@
                             <ComboBox x:Name="PreBufferCombo" Grid.Column="1" Style="{StaticResource Field}"/>
                         </Grid>
 
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                            <TextBlock Text="Content filter" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
+                            <StackPanel Grid.Column="1">
+                                <ComboBox x:Name="RadioFilterCombo" Style="{StaticResource Field}"/>
+                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
+                                           Text="Applies to TOP STATIONS and station search. Stations label themselves, so this is a strong hint, not a guarantee, and any station can still play a song with explicit lyrics. Your saved favourites are always shown."/>
+                            </StackPanel>
+                        </Grid>
+
                         <!-- ============ PODCASTS ============ -->
                         <TextBlock Text="PODCASTS" Style="{StaticResource SettingHeader}"/>
                         <TextBlock Style="{StaticResource SettingHint}" Margin="0,-4,0,10" Width="470" HorizontalAlignment="Left">

@@ -1,6 +1,14 @@
-# Nostalgia Rack 0.7.0
+# Nostalgia Rack 0.7.1
 
 The free hi-fi music player for Windows, in its champagne skin. (It used to be called "Amp Player".)
+
+## What's new in 0.7.1
+- **EQ fix:** the EQ sliders were upside down. Pushing a cap down actually boosted that band, and pushing the preamp up turned everything down, which caused the distortion and the sudden volume jumps. Up now means boost. *If your EQ sounds odd after updating, pick **Flat** in the preset list and start again: your saved curve may still hold boosts from before the fix.*
+- **Playlist font:** the song list now uses **Inter**, a font designed for screens, for clearer titles at the same size.
+- **Add button:** adding songs is now a plain **+**. The add-folder button is next to it.
+- **Folded decks:** folding the EQ or the playlist now leaves a slim blank panel in the rack, with its unfold button. The folded EQ panel has a small lamp that glows while the EQ is on.
+- **FM frequency:** when a station's name or tags mention its dial position (like "KEXP 90.3 FM"), the display shows it big, like a tuner ("FM 90.3"), with the listening time beside it, and in the top line ("RADIO · LIVE · FM 90.3"). Many internet-only stations don't have one, so nothing shows for them.
+- **Radio content filter** (Advanced settings → Internet radio): *Off*, *Hide adult and explicit stations* (the default), or *Only kids' and family stations*. It applies to TOP STATIONS and station search. Stations label themselves, so it's a strong hint rather than a guarantee, and any station can still play a song with explicit lyrics. Your saved favourites always show.
 
 ## What's new in 0.7.0
 - **New name: Nostalgia Rack**, everywhere: the nameplate, the window and taskbar title, the messages, the project file (`NostalgiaRack.csproj`) and the program (`NostalgiaRack.exe`).
@@ -94,5 +102,5 @@ You can change all of them in Advanced settings.
 Milestone 7: ReplayGain (even loudness between songs) and the compressor knobs with the gain-reduction meter (they're shown on the EQ deck but not working yet).
 
 ---
-The fonts (Krona One, Michroma, Jost (as "Rack Jost"), Great Vibes) are free under the SIL Open Font License (see `Skin/Fonts`).
+The fonts (Krona One, Michroma, Jost (as "Rack Jost"), Inter (as "Rack Inter"), Great Vibes) are free under the SIL Open Font License (see `Skin/Fonts`).
 BASS is free for non-commercial use; see un4seen.com before sharing it.

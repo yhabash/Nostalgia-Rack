@@ -290,6 +290,22 @@
                             </Grid>
                         </Border>
 
+                        <!-- The EQ folded away: a plain blank panel in the rack, with its lamp and the unfold button -->
+                        <Border x:Name="EqFoldedPanel" Style="{StaticResource Faceplate}" Width="678" Height="30" Visibility="Collapsed"
+                                MouseLeftButtonDown="Case_MouseLeftButtonDown">
+                            <Grid>
+                                <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0">
+                                    <TextBlock Text="EQ" Style="{StaticResource EngravedTiny}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <Ellipse x:Name="EqFoldedLamp" Style="{StaticResource Lamp}" VerticalAlignment="Center" Margin="0,0,12,0"
+                                             ToolTip="Lit while the EQ is on"/>
+                                    <Button Style="{StaticResource FoldTab}" Click="EqFold_Click" ToolTip="Unfold the EQ (Ctrl+1)">
+                                        <Path Data="{StaticResource ChevronDown}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
                         <!-- ===================== PLAYLIST DECK ===================== -->
                         <Border x:Name="PlaylistSeam" Style="{StaticResource Seam}"/>
                         <Border x:Name="PlaylistDeck" Style="{StaticResource Faceplate}" Width="678" Height="300">
@@ -372,7 +388,7 @@
                                         <RadioButton x:Name="RadioTab" Style="{StaticResource SourceKey}" GroupName="Source" Content="RADIO" Checked="SourceTab_Checked" ToolTip="Internet radio"/>
                                         <RadioButton x:Name="PodcastsTab" Style="{StaticResource SourceKey}" GroupName="Source" Content="PODCASTS" Checked="SourceTab_Checked"/>
                                         <Border Style="{StaticResource PinV}" Height="20" Margin="6,0,10,0" VerticalAlignment="Center"/>
-                                        <Button x:Name="AddFilesButton" Style="{StaticResource StencilSmall}" Margin="0,0,4,0" Click="AddFiles_Click" ToolTip="Add files">
+                                        <Button x:Name="AddFilesButton" Style="{StaticResource StencilSmall}" Margin="0,0,4,0" Click="AddFiles_Click" ToolTip="Add songs">
                                             <Viewbox Style="{StaticResource IconSmall}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconAddFile}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.8"/></Canvas></Viewbox>
                                         </Button>
                                         <Button x:Name="AddFolderButton" Style="{StaticResource StencilSmall}" Margin="0,0,4,0" Click="AddFolder_Click" ToolTip="Add a folder">
@@ -396,6 +412,18 @@
                                         </Button>
                                     </StackPanel>
                                 </Canvas>
+                            </Grid>
+                        </Border>
+
+                        <!-- The playlist folded away: a plain blank panel with just the unfold button -->
+                        <Border x:Name="PlaylistFoldedPanel" Style="{StaticResource Faceplate}" Width="678" Height="30" Visibility="Collapsed"
+                                MouseLeftButtonDown="Case_MouseLeftButtonDown">
+                            <Grid>
+                                <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
+                                <Button Style="{StaticResource FoldTab}" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0"
+                                        Click="PlaylistFold_Click" ToolTip="Unfold the playlist (Ctrl+2)">
+                                    <Path Data="{StaticResource ChevronDown}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
+                                </Button>
                             </Grid>
                         </Border>
 
@@ -449,10 +477,5 @@
             </Grid>
         </Border>
 
-        <!-- Pull tabs for folded decks, hanging under the cabinet -->
-        <StackPanel x:Name="PullTabs" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,46,0">
-            <Button x:Name="PullEq" Style="{StaticResource PullTab}" Content="▾ EQ" Click="EqFold_Click" Visibility="Collapsed" ToolTip="Unfold the EQ"/>
-            <Button x:Name="PullPlaylist" Style="{StaticResource PullTab}" Content="▾ PLAYLIST" Click="PlaylistFold_Click" Visibility="Collapsed" ToolTip="Unfold the playlist"/>
-        </StackPanel>
     </StackPanel>
 </Window>

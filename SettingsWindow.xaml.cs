@@ -15,6 +15,7 @@ public partial class SettingsWindow : Window
     private readonly AppSettings _settings;
     private readonly LibraryDatabase _database;
     private readonly Dictionary<ShortcutAction, TextBox> _shortcutBoxes = new();
+    private List<(string Key, string Text)> _filterChoices = new();
 
     /// <summary>The player listens to this, and applies the settings when it fires.</summary>
     public event Action<AppSettings>? Applied;
@@ -74,6 +75,15 @@ public partial class SettingsWindow : Window
         Fill(PreBufferCombo, _settings.NetPreBufferPercent,
              ("25% of the buffer (starts sooner)", 25), ("50% of the buffer", 50),
              ("75% of the buffer (recommended)", 75), ("100% of the buffer (steadiest)", 100));
+
+        _filterChoices = new List<(string Key, string Text)>
+        {
+            ("Off", "Off: show every station"),
+            ("HideAdult", "Hide adult and explicit stations (recommended)"),
+            ("FamilyOnly", "Only kids' and family stations")
+        };
+        RadioFilterCombo.ItemsSource = _filterChoices.Select(c => c.Text).ToList();
+        RadioFilterCombo.SelectedIndex = Math.Max(0, _filterChoices.FindIndex(c => c.Key == _settings.RadioFilter));
 
         ThemeCombo.ItemsSource = new[] { "Champagne & Black Glass" };
         ThemeCombo.SelectedIndex = 0;
@@ -231,6 +241,7 @@ public partial class SettingsWindow : Window
         _settings.NetBufferMs = (int)Picked(NetBufferCombo, 5000);
         _settings.NetPreBufferPercent = (int)Picked(PreBufferCombo, 75);
         _settings.Theme = "Champagne";
+        if (RadioFilterCombo.SelectedIndex >= 0) _settings.RadioFilter = _filterChoices[RadioFilterCombo.SelectedIndex].Key;
         _settings.PodcastIndexKey = PodcastKeyBox.Text.Trim();
         _settings.PodcastIndexSecret = PodcastSecretBox.Password.Trim();
         return _settings.Copy(); // the player gets its own copy; this window keeps working on ours

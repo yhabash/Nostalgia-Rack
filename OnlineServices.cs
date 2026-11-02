@@ -53,29 +53,81 @@ public static class RadioBrowser
         "https://all.api.radio-browser.info"
     };
 
-    /// <summary>Stations whose name matches the text (or the most popular ones, for empty text).</summary>
-    public static async Task<List<PlaylistItem>> SearchAsync(string text)
+    /// <summary>
+    /// Stations whose name matches the text (or the most popular ones, for empty text),
+    /// passed through the content filter from Advanced settings:
+    ///   "Off"        everything
+    ///   "HideAdult"  hides stations whose name or tags mark them as adult or explicit (default)
+    ///   "FamilyOnly" only stations tagged for kids or families
+    /// Stations tag themselves, so the filter is a strong hint, not a guarantee.
+    /// </summary>
+    public static async Task<List<PlaylistItem>> SearchAsync(string text, string filter = "HideAdult")
     {
-        string path = string.IsNullOrWhiteSpace(text)
-            ? "/json/stations/topclick/100"
-            : $"/json/stations/search?name={Uri.EscapeDataString(text.Trim())}&limit=150&hidebroken=true&order=clickcount&reverse=true";
+        bool familyOnly = filter == "FamilyOnly";
+        string search = text.Trim();
+        var paths = new List<string>();
 
+        if (familyOnly && search.Length == 0)
+        {
+            // The most popular stations are rarely kids' stations, so ask for those tags directly.
+            foreach (string tag in FamilyTags.Take(4))
+                paths.Add($"/json/stations/search?tag={Uri.EscapeDataString(tag)}&limit=100&hidebroken=true&order=clickcount&reverse=true");
+        }
+        else if (search.Length == 0)
+            paths.Add("/json/stations/topclick/150");
+        else
+            paths.Add($"/json/stations/search?name={Uri.EscapeDataString(search)}&limit=200&hidebroken=true&order=clickcount&reverse=true");
+
+        var found = new List<(PlaylistItem item, int clicks)>();
+        foreach (string path in paths)
+            found.AddRange(Parse(await GetAsync(path), filter));
+
+        // Several tag searches can return the same station; keep each once, most popular first.
+        return found.GroupBy(f => f.item.Path).Select(g => g.First())
+                    .OrderByDescending(f => f.clicks).Select(f => f.item).Take(150).ToList();
+    }
+
+    private static async Task<string> GetAsync(string path)
+    {
         Exception? last = null;
         foreach (var server in Servers)
         {
-            try
-            {
-                string json = await Web.Client.GetStringAsync(server + path);
-                return Parse(json);
-            }
+            try { return await Web.Client.GetStringAsync(server + path); }
             catch (Exception ex) { last = ex; }
         }
         throw new InvalidOperationException($"Radio Browser didn't answer: {Web.Explain(last!)}");
     }
 
-    private static List<PlaylistItem> Parse(string json)
+    // Words that mark a station as adult or explicit (matched as whole words in the name and tags).
+    private static readonly HashSet<string> AdultWords = new(StringComparer.OrdinalIgnoreCase)
     {
-        var result = new List<PlaylistItem>();
+        "adult", "adults", "erotic", "erotica", "erotik", "sex", "sexy", "xxx", "porn", "porno",
+        "explicit", "nsfw", "18+", "hentai", "fetish", "nude", "nudity", "hardcore", "adultos"
+    };
+
+    // Tags that mark a station as made for kids or families.
+    private static readonly string[] FamilyTags =
+    {
+        "kids", "children", "family", "kinder", "enfants", "infantil", "niños", "bambini",
+        "lullaby", "lullabies", "nursery", "disney", "kinderradio", "kindermusik"
+    };
+
+    private static bool LooksAdult(string name, string tags)
+    {
+        foreach (string word in System.Text.RegularExpressions.Regex.Split($"{name} {tags}".ToLowerInvariant(), @"[^\p{L}\p{N}+]+"))
+            if (AdultWords.Contains(word)) return true;
+        return false;
+    }
+
+    private static bool LooksFamily(string name, string tags)
+    {
+        string all = $"{name} {tags}".ToLowerInvariant();
+        return FamilyTags.Any(t => all.Contains(t));
+    }
+
+    private static List<(PlaylistItem item, int clicks)> Parse(string json, string filter)
+    {
+        var result = new List<(PlaylistItem, int)>();
         using var doc = JsonDocument.Parse(json);
         foreach (var s in doc.RootElement.EnumerateArray())
         {
@@ -83,26 +135,82 @@ public static class RadioBrowser
             if (url.Length == 0) url = Str(s, "url");
             if (url.Length == 0) continue;
 
+            string name = Str(s, "name").Trim();
+            string allTags = Str(s, "tags");
+
+            // The content filter. Adult stations are hidden in both filtered modes.
+            if (filter != "Off" && LooksAdult(name, allTags)) continue;
+            if (filter == "FamilyOnly" && !LooksFamily(name, allTags)) continue;
+
             string codec = Str(s, "codec").ToUpperInvariant();
             int bitrate = s.TryGetProperty("bitrate", out var b) && b.ValueKind == JsonValueKind.Number ? b.GetInt32() : 0;
+            int clicks = s.TryGetProperty("clickcount", out var c) && c.ValueKind == JsonValueKind.Number ? c.GetInt32() : 0;
             string country = Str(s, "country");
-            string tags = string.Join(", ", Str(s, "tags").Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Take(3));
+            var tagList = allTags.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
 
-            result.Add(new PlaylistItem
+            // If the dial position is only in the tags (e.g. "fm 90.3"), keep it at the front of the
+            // tags we store, so the display can show it even for a saved favourite.
+            string? frequency = RadioFrequency.Find(name) is null ? RadioFrequency.Find(allTags) : null;
+            var shownTags = tagList.Take(3).ToList();
+            if (frequency != null) shownTags.Insert(0, frequency);
+
+            result.Add((new PlaylistItem
             {
                 Path = url,
-                Title = Str(s, "name").Trim(),
+                Title = name,
                 Artist = country,
-                Album = tags,
+                Album = string.Join(", ", shownTags),
                 Kind = TrackKind.Radio,
                 Format = bitrate > 0 ? $"{codec} {bitrate}" : codec
-            });
+            }, clicks));
         }
         return result;
     }
 
     private static string Str(JsonElement e, string name) =>
         e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() ?? "" : "";
+}
+
+// =====================================================================================
+// FM / AM dial position, read from a station's name or tags ("KEXP 90.3 FM", "fm 101.1")
+// =====================================================================================
+
+public static class RadioFrequency
+{
+    private static readonly System.Text.RegularExpressions.Regex[] FmPatterns =
+    {
+        // 87.5 … 108.0 with a decimal point or comma, optionally with FM or MHz around it
+        new(@"(?<![\d.,])(?<f>8[7-9]|9\d|10[0-8])[.,](?<d>\d)\d?(?![\d.,])", System.Text.RegularExpressions.RegexOptions.IgnoreCase),
+        // a whole number right next to "FM": "Hot 97 FM", "FM 104"
+        new(@"(?<![\d.,])(?<f>8[7-9]|9\d|10[0-8])\s*FM\b", System.Text.RegularExpressions.RegexOptions.IgnoreCase),
+        new(@"\bFM\s*(?<f>8[7-9]|9\d|10[0-8])(?![\d.,])", System.Text.RegularExpressions.RegexOptions.IgnoreCase),
+    };
+
+    // 530 … 1700 kHz, only when "AM" or "kHz" is written next to it
+    private static readonly System.Text.RegularExpressions.Regex AmPattern =
+        new(@"(?<![\d.,])(?<f>5[3-9]\d|[6-9]\d\d|1[0-6]\d\d|1700)\s*(AM|kHz)\b|\bAM\s*(?<f>5[3-9]\d|[6-9]\d\d|1[0-6]\d\d|1700)(?![\d.,])",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+
+    /// <summary>"FM 90.3", "AM 1010", or null when the text doesn't mention a dial position.</summary>
+    public static string? Find(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        foreach (var pattern in FmPatterns)
+        {
+            var m = pattern.Match(text);
+            if (!m.Success) continue;
+            double value = double.Parse(m.Groups["f"].Value) + (m.Groups["d"].Success ? int.Parse(m.Groups["d"].Value) / 10.0 : 0);
+            if (value < 87.5 && m.Groups["d"].Success || value < 87 || value > 108.0) continue;
+            return m.Groups["d"].Success
+                ? $"FM {value.ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)}"
+                : $"FM {m.Groups["f"].Value}"; // "Hot 97 FM" → FM 97
+        }
+        var am = AmPattern.Match(text);
+        return am.Success ? $"AM {am.Groups["f"].Value}" : null;
+    }
+
+    /// <summary>The dial position of a station from its name, then its stored tags.</summary>
+    public static string? For(PlaylistItem station) => Find(station.Title) ?? Find(station.Album);
 }
 
 // =====================================================================================

@@ -54,6 +54,7 @@ public partial class MainWindow : Window
     private PlaylistItem? _current;
     private PlaylistItem? _playlistPosition;
     private List<Chapter> _chapters = new();
+    private string? _frequency;            // "FM 90.3" while a station with a known dial position plays
     private int _reconnectAttempts;
 
     // Saved-playlist bookkeeping.
@@ -499,6 +500,7 @@ public partial class MainWindow : Window
         if (_current != null) _current.IsCurrent = false;
         _current = item;
         _chapters = new List<Chapter>();
+        _frequency = item?.Kind == TrackKind.Radio ? RadioFrequency.For(item) : null;
         ChaptersButton.Visibility = Visibility.Collapsed;
         TranscriptButton.Visibility = Visibility.Collapsed;
 
@@ -593,7 +595,7 @@ public partial class MainWindow : Window
 
         string where = _current.Kind switch
         {
-            TrackKind.Radio => "RADIO · LIVE",
+            TrackKind.Radio => _frequency != null ? $"RADIO · LIVE · {_frequency}" : "RADIO · LIVE",
             TrackKind.Episode => "PODCAST",
             _ => _playlist.Contains(_current) ? $"NOW PLAYING · {_playlist.IndexOf(_current) + 1:00} / {_playlist.Count:00}" : "NOW PLAYING"
         };
@@ -631,8 +633,17 @@ public partial class MainWindow : Window
         if (!_engine.IsLoaded) { Taskbar.ProgressState = TaskbarItemProgressState.None; return; }
 
         double position = _engine.PositionSeconds, length = _engine.LengthSeconds;
-        TimeText.Text = SlimTime.Text = FormatTime(position);
-        LengthText.Text = length > 0 ? $"/ {FormatTime(length)}" : "";
+        if (_frequency != null && _current?.Kind == TrackKind.Radio)
+        {
+            // Radio with a known dial position: show it big, like a tuner, and the listening time small.
+            TimeText.Text = SlimTime.Text = _frequency;
+            LengthText.Text = FormatTime(position);
+        }
+        else
+        {
+            TimeText.Text = SlimTime.Text = FormatTime(position);
+            LengthText.Text = length > 0 ? $"/ {FormatTime(length)}" : "";
+        }
         if (!_seeking && length > 0) SeekBar.Value = Math.Clamp(position / length, 0, 1);
 
         if (_current?.Kind == TrackKind.Radio && _engine.BufferPercent is int buffer && buffer < 50 && !_statusTimer.IsEnabled)
@@ -836,6 +847,7 @@ public partial class MainWindow : Window
         SkinProps.SetLit(EqOnButton, _settings.EqOn && !_bypass);
         SkinProps.SetLit(BypassButton, _bypass);
         SkinProps.SetLit(SoftClipKey, _settings.SoftClip && !_bypass);
+        SkinProps.SetLit(EqFoldedLamp, _settings.EqOn && !_bypass);
         _engine.Output.BoostActive = _engine.Equalizer.IsBoosting;
     }
 
@@ -853,11 +865,13 @@ public partial class MainWindow : Window
 
         SlimDeck.Visibility = slim ? Visibility.Visible : Visibility.Collapsed;
         MainDeck.Visibility = slim ? Visibility.Collapsed : Visibility.Visible;
-        EqSeam.Visibility = EqDeck.Visibility = showEq ? Visibility.Visible : Visibility.Collapsed;
-        PlaylistSeam.Visibility = PlaylistDeck.Visibility = showList ? Visibility.Visible : Visibility.Collapsed;
+        EqDeck.Visibility = showEq ? Visibility.Visible : Visibility.Collapsed;
+        PlaylistDeck.Visibility = showList ? Visibility.Visible : Visibility.Collapsed;
 
-        PullEq.Visibility = !slim && _settings.EqFolded ? Visibility.Visible : Visibility.Collapsed;
-        PullPlaylist.Visibility = !slim && _settings.PlaylistFolded ? Visibility.Visible : Visibility.Collapsed;
+        // A folded deck leaves a plain blank panel in the rack, with its unfold button.
+        EqFoldedPanel.Visibility = !slim && _settings.EqFolded ? Visibility.Visible : Visibility.Collapsed;
+        PlaylistFoldedPanel.Visibility = !slim && _settings.PlaylistFolded ? Visibility.Visible : Visibility.Collapsed;
+        EqSeam.Visibility = PlaylistSeam.Visibility = slim ? Visibility.Collapsed : Visibility.Visible;
     }
 
     // ================= The window frame =================
@@ -952,6 +966,8 @@ public partial class MainWindow : Window
 
         SaveSettings();
         _ = PrepareNextAsync(); // the crossfade length may have changed
+        if (old.RadioFilter != updated.RadioFilter && _view == ListKind.Radio && !_radioShowsFavourites)
+            _ = SearchRadioAsync(""); // show the station list again through the new filter
         ShowStatus("SETTINGS SAVED");
     }
 
@@ -1525,11 +1541,12 @@ public partial class MainWindow : Window
         RadioInfo.Text = "SEARCHING…";
         try
         {
-            var stations = await RadioBrowser.SearchAsync(text);
+            var stations = await RadioBrowser.SearchAsync(text, _settings.RadioFilter);
             _radioShowsFavourites = false;
             _radio.Clear();
             foreach (var station in stations) _radio.Add(station);
-            RadioInfo.Text = text.Length == 0 ? "MOST POPULAR" : $"{stations.Count} FOUND";
+            RadioInfo.Text = text.Length > 0 ? $"{stations.Count} FOUND"
+                           : _settings.RadioFilter == "FamilyOnly" ? "KIDS & FAMILY" : "MOST POPULAR";
             SkinProps.SetLit(FavouritesKey, false);
             SkinProps.SetLit(TopStationsKey, text.Length == 0);
             SearchBox.Text = "";

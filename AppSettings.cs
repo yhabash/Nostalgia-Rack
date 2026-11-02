@@ -81,6 +81,7 @@ public sealed class AppSettings
     public string ReplayGainMode { get; set; } = "Off"; // Off / Track / Album (applied from Milestone 7)
     public int NetBufferMs { get; set; } = 5000;
     public int NetPreBufferPercent { get; set; } = 75;
+    public string RadioFilter { get; set; } = "HideAdult"; // Off / HideAdult / FamilyOnly
     public int BluetoothLatencyMs { get; set; }         // delays the VU needles to match wireless headphones
     public double SeekStepSeconds { get; set; } = 15;
     public string Theme { get; set; } = "Champagne";
