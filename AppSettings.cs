@@ -90,11 +90,13 @@ public sealed class AppSettings
     // ---------------- Remembered between runs ----------------
     public double Volume { get; set; } = 0.8;
     public double Balance { get; set; }
-    public float[] EqGains { get; set; } = new float[10];
-    public float Preamp { get; set; }
+    // EQ banks: each holds the 10 band gains, then the preamp (11 numbers, in dB).
+    // EqBank says which is lit: 0 = none (flat), 1 = Bank 1, 2 = Bank 2.
+    public int EqBank { get; set; }
+    public float[] EqBank1 { get; set; } = new float[11];
+    public float[] EqBank2 { get; set; } = new float[11];
     public bool EqOn { get; set; } = true;
     public bool SoftClip { get; set; } = true;
-    public string EqPreset { get; set; } = "Flat";
     public bool EqFolded { get; set; }
     public bool PlaylistFolded { get; set; }
     public bool SlimMode { get; set; }
@@ -183,7 +185,9 @@ public sealed class AppSettings
         // Make sure every action has an entry (new actions in later versions get their default).
         foreach (var (action, shortcut) in DefaultShortcuts())
             settings.Shortcuts.TryAdd(action, shortcut);
-        if (settings.EqGains.Length != 10) settings.EqGains = new float[10];
+        if (settings.EqBank1.Length != 11) settings.EqBank1 = new float[11];
+        if (settings.EqBank2.Length != 11) settings.EqBank2 = new float[11];
+        if (settings.EqBank is < 0 or > 2) settings.EqBank = 0;
 
         settings.PodcastIndexKey = Unprotect(database.GetSetting("podcastindex_key"));
         settings.PodcastIndexSecret = Unprotect(database.GetSetting("podcastindex_secret"));

@@ -1,6 +1,13 @@
-# Nostalgia Rack 0.7.2
+# Nostalgia Rack 0.7.3
 
 The free hi-fi music player for Windows, in its champagne skin. (It used to be called "Amp Player".)
+
+## What's new in 0.7.3
+- **EQ banks instead of presets.** The preset list is gone. The EQ deck now has two memory keys, **BANK 1** and **BANK 2**, and a small amber window that says which one is lit.
+  - Press a bank to light it. While it's lit, every slider move (preamp included) is saved into it automatically.
+  - Only one bank is lit at a time. Press the lit bank again and both are off: the EQ goes **FLAT** and the sliders lock at 0 (they dim a little).
+  - Both banks start flat. Your old EQ curve and presets are not carried over.
+- **Share with friends:** in Visual Studio, right-click the project → **Publish…** → **FriendsTestBuild** → **Publish**. Zip the folder `bin\publish\NostalgiaRack` and send it. Your friends unzip it and double-click `NostalgiaRack.exe`; nothing to install. A `FOR TESTERS.txt` note inside explains the rest.
 
 ## What's new in 0.7.2
 - **No more wood.** The rosewood case is gone: the player is just the champagne metal decks, with no frame or shadow around them. The dark seams between the decks stay.

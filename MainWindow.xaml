@@ -210,8 +210,17 @@
                                     </Button>
 
                                     <TextBlock Canvas.Left="20" Canvas.Top="15" Text="GRAPHIC EQUALIZER" Style="{StaticResource Engraved}"/>
-                                    <ComboBox x:Name="PresetCombo" Canvas.Left="230" Canvas.Top="10" Width="200" Style="{StaticResource GlassCombo}"
-                                              Tag="PRESET" SelectionChanged="PresetCombo_SelectionChanged" ToolTip="EQ presets"/>
+                                    <!-- EQ memory: a small amber window (BANK 1 / BANK 2 / FLAT) and the two bank keys -->
+                                    <Border Canvas.Left="196" Canvas.Top="10" Width="104" Height="26" Style="{StaticResource Glass}">
+                                        <TextBlock x:Name="EqBankDisplay" Style="{StaticResource DisplayGlow}" FontSize="10.5"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center" Text="FLAT"/>
+                                    </Border>
+                                    <Button x:Name="Bank1Key" Canvas.Left="310" Canvas.Top="11" Width="56" Style="{StaticResource TextKey}"
+                                            Content="BANK 1" Click="Bank1_Click"
+                                            ToolTip="EQ memory 1. While lit, the sliders shape and save this curve. Press again for flat."/>
+                                    <Button x:Name="Bank2Key" Canvas.Left="372" Canvas.Top="11" Width="56" Style="{StaticResource TextKey}"
+                                            Content="BANK 2" Click="Bank2_Click"
+                                            ToolTip="EQ memory 2. While lit, the sliders shape and save this curve. Press again for flat."/>
 
                                     <!-- Engraved dB lines behind the sliders -->
                                     <Border Canvas.Left="44" Canvas.Top="50" Width="386" Height="1" Background="#4746320F"/>

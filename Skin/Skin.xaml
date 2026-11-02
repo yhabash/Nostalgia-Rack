@@ -514,6 +514,13 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <!-- Locked at flat (no bank lit): the caps dim a little -->
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.55"/>
+                <Setter Property="Cursor" Value="Arrow"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <!-- Seek line on the glass: amber where you are, faint ahead; click or drag to jump -->

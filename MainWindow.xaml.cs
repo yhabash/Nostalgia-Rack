@@ -60,7 +60,7 @@ public partial class MainWindow : Window
     // Saved-playlist bookkeeping.
     private bool _playlistChanged;
     private bool _ignoreComboChanges;
-    private bool _ignorePresetChanges;
+    private bool _loadingBank;            // true while a bank is being put onto the sliders
     private bool _bypass;
     private bool _seeking;
 
@@ -70,6 +70,7 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _searchTimer = new() { Interval = TimeSpan.FromMilliseconds(250) };
     private readonly DispatcherTimer _saveTimer = new() { Interval = TimeSpan.FromSeconds(2) };
     private readonly DispatcherTimer _statusTimer = new() { Interval = TimeSpan.FromSeconds(4) };
+    private readonly DispatcherTimer _settingsTimer = new() { Interval = TimeSpan.FromSeconds(1.5) };
     private DateTime _lastMediaTimeline = DateTime.MinValue;
     private DateTime _lastTimeUpdate = DateTime.MinValue;
 
@@ -79,20 +80,6 @@ public partial class MainWindow : Window
     private double _needleLeft = -40, _needleRight = -40;
     private DateTime _lastScreenUpdate = DateTime.UtcNow;
 
-    // The EQ presets in the drop-down (dB for 31 Hz … 16 kHz).
-    private static readonly Dictionary<string, float[]> Presets = new()
-    {
-        ["Flat"] = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 },
-        ["Loudness"] = new float[] { 6, 4, 1.5f, 0, -1, -1, 0, 1.5f, 4, 6 },
-        ["Bass boost"] = new float[] { 7, 6, 4, 2, 0, 0, 0, 0, 0, 0 },
-        ["Treble boost"] = new float[] { 0, 0, 0, 0, 0, 1, 2, 4, 6, 7 },
-        ["Vocal"] = new float[] { -2, -2, -1, 1, 3, 4, 3, 1, 0, -1 },
-        ["Rock"] = new float[] { 5, 3, 1, -1, -2, -1, 1, 3, 4, 5 },
-        ["Jazz"] = new float[] { 3, 2, 1, 2, -1, -1, 0, 1, 2, 3 },
-        ["Classical"] = new float[] { 4, 3, 2, 1, 0, 0, 0, 1, 2, 3 },
-        ["Electronic"] = new float[] { 5, 4, 1, 0, -2, 1, 0, 1, 4, 5 },
-    };
-    private const string CustomPreset = "Custom";
 
     // ================= Starting up =================
 
@@ -130,6 +117,7 @@ public partial class MainWindow : Window
         _searchTimer.Tick += (_, _) => { _searchTimer.Stop(); RefreshFilter(); };
         _saveTimer.Tick += (_, _) => { _saveTimer.Stop(); RememberLists(); };
         _statusTimer.Tick += (_, _) => { _statusTimer.Stop(); RestoreStatusLine(); };
+        _settingsTimer.Tick += (_, _) => { _settingsTimer.Stop(); SaveSettings(); };
 
         // Waking from sleep: re-open the sound device, which Windows may have reset.
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
@@ -195,14 +183,7 @@ public partial class MainWindow : Window
         _engine.Output.SetVolume(_settings.Volume);
         _engine.Output.SetBalance(_settings.Balance);
 
-        _ignorePresetChanges = true;
-        PresetCombo.ItemsSource = Presets.Keys.Concat(new[] { CustomPreset }).ToList();
-        PresetCombo.SelectedItem = Presets.ContainsKey(_settings.EqPreset) ? _settings.EqPreset : CustomPreset;
-        PreampSlider.Value = _settings.Preamp;
-        var bands = BandSliders().ToList();
-        for (int i = 0; i < bands.Count && i < _settings.EqGains.Length; i++)
-            bands[i].Value = _settings.EqGains[i];
-        _ignorePresetChanges = false;
+        ShowBank(_settings.EqBank);
 
         _engine.Equalizer.SetEnabled(_settings.EqOn);
         _engine.Output.SoftClipEnabled = _settings.SoftClip;
@@ -260,9 +241,6 @@ public partial class MainWindow : Window
     {
         _settings.Volume = VolumeKnob.Value;
         _settings.Balance = BalanceKnob.Value;
-        _settings.EqGains = _engine.Equalizer.Gains;
-        _settings.Preamp = (float)PreampSlider.Value;
-        _settings.EqPreset = PresetCombo.SelectedItem as string ?? CustomPreset;
         if (WindowState == WindowState.Normal) { _settings.WindowLeft = Left; _settings.WindowTop = Top; }
         try { _settings.Save(_database); } catch (Exception) { /* closing anyway */ }
     }
@@ -773,41 +751,75 @@ public partial class MainWindow : Window
         if (sender is not Slider slider || !int.TryParse(slider.Tag?.ToString(), out int band)) return;
         _engine.Equalizer.SetBand(band, (float)e.NewValue);
         _engine.Output.BoostActive = _engine.Equalizer.IsBoosting;
-        if (!_ignorePresetChanges) MarkPresetCustomIfChanged();
+        StoreInBank(band, (float)e.NewValue);
     }
 
     private void Preamp_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         _engine.Equalizer.SetPreamp((float)e.NewValue);
         _engine.Output.BoostActive = _engine.Equalizer.IsBoosting;
+        StoreInBank(10, (float)e.NewValue);
+    }
+
+    // ---- EQ banks ----
+    // Two memories, BANK 1 and BANK 2. Only one is lit at a time; pressing the lit one switches
+    // it off, and with neither lit the EQ is flat and the sliders are locked at 0.
+    // While a bank is lit, every slider move is saved into it straight away (preamp included).
+
+    private float[]? ActiveBank => _settings.EqBank switch { 1 => _settings.EqBank1, 2 => _settings.EqBank2, _ => null };
+
+    private void Bank1_Click(object sender, RoutedEventArgs e) => SelectBank(1);
+    private void Bank2_Click(object sender, RoutedEventArgs e) => SelectBank(2);
+
+    private void SelectBank(int bank)
+    {
+        int chosen = _settings.EqBank == bank ? 0 : bank; // pressing the lit bank again = flat
+        ShowBank(chosen);
+        ShowStatus(chosen == 0 ? "EQ FLAT" : $"EQ BANK {chosen}");
+        SaveSettingsSoon();
+    }
+
+    // Puts a bank (or flat, for 0) onto the sliders, which also sends it to the EQ.
+    private void ShowBank(int bank)
+    {
+        _settings.EqBank = bank;
+        float[] values = ActiveBank ?? new float[11];
+
+        _loadingBank = true;
+        var bands = BandSliders().ToList();
+        for (int i = 0; i < bands.Count; i++) bands[i].Value = values[i];
+        PreampSlider.Value = values[10];
+        _loadingBank = false;
+
+        bool editable = bank != 0;
+        foreach (var slider in bands.Append(PreampSlider))
+        {
+            slider.IsEnabled = editable;
+            slider.ToolTip = editable ? null : "Light BANK 1 or BANK 2 to shape the EQ";
+        }
+
+        SkinProps.SetLit(Bank1Key, bank == 1);
+        SkinProps.SetLit(Bank2Key, bank == 2);
+        EqBankDisplay.Text = bank == 0 ? "FLAT" : $"BANK {bank}";
+    }
+
+    // A slider moved by hand: remember it in the lit bank.
+    private void StoreInBank(int index, float value)
+    {
+        if (_loadingBank || ActiveBank is not float[] bank) return;
+        bank[index] = value;
+        SaveSettingsSoon();
+    }
+
+    private void SaveSettingsSoon()
+    {
+        _settingsTimer.Stop();
+        _settingsTimer.Start();
     }
 
     private void EqSlider_DoubleClick(object sender, MouseButtonEventArgs e)
     {
         if (sender is Slider slider) slider.Value = 0;
-    }
-
-    // Picking a preset moves all ten sliders.
-    private void PresetCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (_ignorePresetChanges || PresetCombo.SelectedItem is not string name || !Presets.TryGetValue(name, out var gains)) return;
-        _ignorePresetChanges = true;
-        var bands = BandSliders().ToList();
-        for (int i = 0; i < bands.Count; i++) bands[i].Value = gains[i];
-        _ignorePresetChanges = false;
-        ShowStatus($"EQ PRESET · {name}");
-    }
-
-    // Moving a slider by hand turns the preset into "Custom" (unless it still matches one).
-    private void MarkPresetCustomIfChanged()
-    {
-        if (PresetCombo?.ItemsSource == null) return;
-        var gains = BandSliders().Select(s => (float)s.Value).ToArray();
-        string match = Presets.FirstOrDefault(p => p.Value.Zip(gains).All(z => Math.Abs(z.First - z.Second) < 0.01f)).Key ?? CustomPreset;
-        if (Equals(PresetCombo.SelectedItem, match)) return;
-        _ignorePresetChanges = true;
-        PresetCombo.SelectedItem = match;
-        _ignorePresetChanges = false;
     }
 
     private void EqOnButton_Click(object sender, RoutedEventArgs e) => ToggleEq();
@@ -946,8 +958,8 @@ public partial class MainWindow : Window
 
         // Keep the things the player remembers by itself (they may have changed meanwhile).
         updated.Volume = VolumeKnob.Value; updated.Balance = BalanceKnob.Value;
-        updated.EqGains = _engine.Equalizer.Gains; updated.Preamp = (float)PreampSlider.Value;
-        updated.EqOn = old.EqOn; updated.SoftClip = old.SoftClip; updated.EqPreset = PresetCombo.SelectedItem as string ?? old.EqPreset;
+        updated.EqBank = old.EqBank; updated.EqBank1 = old.EqBank1; updated.EqBank2 = old.EqBank2;
+        updated.EqOn = old.EqOn; updated.SoftClip = old.SoftClip;
         updated.EqFolded = old.EqFolded; updated.PlaylistFolded = old.PlaylistFolded; updated.SlimMode = old.SlimMode;
         _settings = updated;
 
