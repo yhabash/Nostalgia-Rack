@@ -1,6 +1,10 @@
-# Nostalgia Rack 0.7.1
+# Nostalgia Rack 0.7.2
 
 The free hi-fi music player for Windows, in its champagne skin. (It used to be called "Amp Player".)
+
+## What's new in 0.7.2
+- **No more wood.** The rosewood case is gone: the player is just the champagne metal decks, with no frame or shadow around them. The dark seams between the decks stay.
+- The **settings, minimise and close** keys moved onto the metal, in the top-right corner of the main deck next to the fold tab (and at the right end of the slim strip). The "Yazan" signature moved a little left to make room.
 
 ## What's new in 0.7.1
 - **EQ fix:** the EQ sliders were upside down. Pushing a cap down actually boosted that band, and pushing the preamp up turned everything down, which caused the distortion and the sudden volume jumps. Up now means boost. *If your EQ sounds odd after updating, pick **Flat** in the preset list and start again: your saved curve may still hold boosts from before the fix.*

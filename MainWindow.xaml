@@ -1,6 +1,6 @@
 <!--
   MainWindow.xaml: the player, in the champagne skin (design Version B).
-  Three decks stacked in a rosewood case: the main deck (display, VU meters, transport,
+  Three decks stacked in a bare champagne-metal rack (no case): the main deck (display, VU meters, transport,
   balance and volume), the EQ deck, and the playlist deck. Each can fold away, and the
   whole player can shrink to a slim strip. Positions follow the approved mockups.
   What happens when you click things is in MainWindow.xaml.cs.
@@ -69,29 +69,15 @@
         </TaskbarItemInfo>
     </Window.TaskbarItemInfo>
 
-    <StackPanel Margin="14,10,14,18">
+    <StackPanel>
         <!-- The whole player is drawn at 70% of the design size (the design is 678 px wide). -->
         <StackPanel.LayoutTransform>
             <ScaleTransform ScaleX="0.7" ScaleY="0.7"/>
         </StackPanel.LayoutTransform>
 
-        <!-- ===================== The rosewood case ===================== -->
-        <Border x:Name="CaseBorder" CornerRadius="9" Background="{StaticResource RoseBrush}"
-                MouseLeftButtonDown="Case_MouseLeftButtonDown">
-            <Border.Effect>
-                <DropShadowEffect Color="Black" BlurRadius="22" ShadowDepth="6" Direction="270" Opacity="0.6"/>
-            </Border.Effect>
-            <Grid>
-                <Border CornerRadius="9" Background="{StaticResource GrainBrush}" IsHitTestVisible="False"/>
-
-                <!-- Settings, minimise and close, on the right wooden side -->
-                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,7,0">
-                    <Button x:Name="CloseKey" Style="{StaticResource CaseKey}" Content="✕" Click="CloseKey_Click" ToolTip="Close"/>
-                    <Button x:Name="MinimizeKey" Style="{StaticResource CaseKey}" Content="–" Click="MinimizeKey_Click" ToolTip="Minimise"/>
-                    <Button x:Name="SettingsKey" Style="{StaticResource CaseKey}" Content="⚙" Click="SettingsKey_Click" ToolTip="Advanced settings (Ctrl+,)"/>
-                </StackPanel>
-
-                <Border Margin="36,10,36,12" Background="#0D0B09" Padding="4" CornerRadius="4">
+        <!-- ===================== The rack (bare champagne metal, no case) =====================
+             Drag the player by any empty bit of metal. -->
+        <Border x:Name="CaseBorder" MouseLeftButtonDown="Case_MouseLeftButtonDown">
                     <StackPanel>
 
                         <!-- ===================== MAIN DECK ===================== -->
@@ -103,10 +89,16 @@
                                                FontSize="10" Foreground="{StaticResource InkBrush}" MouseLeftButtonDown="Case_MouseLeftButtonDown">
                                         <TextBlock.Effect><DropShadowEffect Color="#FFFAE6" ShadowDepth="1" Direction="270" BlurRadius="0" Opacity="0.75"/></TextBlock.Effect>
                                     </TextBlock>
-                                    <TextBlock Canvas.Right="40" Canvas.Top="1" Text="Yazan" FontFamily="{StaticResource SignatureFont}"
+                                    <TextBlock Canvas.Right="128" Canvas.Top="1" Text="Yazan" FontFamily="{StaticResource SignatureFont}"
                                                FontSize="22" Foreground="#6B5228" IsHitTestVisible="False">
                                         <TextBlock.Effect><DropShadowEffect Color="#FFFAE6" ShadowDepth="1" Direction="270" BlurRadius="0" Opacity="0.6"/></TextBlock.Effect>
                                     </TextBlock>
+                                    <!-- Settings, minimise and close, on the metal before the fold tab -->
+                                    <StackPanel Canvas.Right="40" Canvas.Top="6" Orientation="Horizontal">
+                                        <Button x:Name="SettingsKey" Style="{StaticResource CaseKey}" Content="⚙" Click="SettingsKey_Click" ToolTip="Advanced settings (Ctrl+,)"/>
+                                        <Button x:Name="MinimizeKey" Style="{StaticResource CaseKey}" Content="–" Click="MinimizeKey_Click" ToolTip="Minimise"/>
+                                        <Button x:Name="CloseKey" Style="{StaticResource CaseKey}" Content="✕" Click="CloseKey_Click" ToolTip="Close"/>
+                                    </StackPanel>
                                     <Button x:Name="MainFold" Canvas.Right="6" Canvas.Top="6" Style="{StaticResource FoldTab}"
                                             Click="MainFold_Click" ToolTip="Shrink to the slim strip (Ctrl+M)">
                                         <Path Data="{StaticResource ChevronUp}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
@@ -439,6 +431,11 @@
                                             Margin="8,0,0,0" Click="MainFold_Click" ToolTip="Open the full player (Ctrl+M)">
                                         <Path Data="{StaticResource ChevronDown}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
                                     </Button>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
+                                        <Button Style="{StaticResource CaseKey}" Content="⚙" Click="SettingsKey_Click" ToolTip="Advanced settings (Ctrl+,)"/>
+                                        <Button Style="{StaticResource CaseKey}" Content="–" Click="MinimizeKey_Click" ToolTip="Minimise"/>
+                                        <Button Style="{StaticResource CaseKey}" Content="✕" Click="CloseKey_Click" ToolTip="Close"/>
+                                    </StackPanel>
                                     <Grid DockPanel.Dock="Right" Width="38" Height="38" Margin="8,0,0,0">
                                         <local:Knob x:Name="SlimVolume" Minimum="0" Maximum="1" DefaultValue="0.8" ValueChanged="SlimVolume_ValueChanged" ToolTip="Volume"/>
                                     </Grid>
@@ -473,8 +470,6 @@
                             </Grid>
                         </Border>
                     </StackPanel>
-                </Border>
-            </Grid>
         </Border>
 
     </StackPanel>

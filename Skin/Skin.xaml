@@ -443,11 +443,11 @@
         </Setter>
     </Style>
 
-    <!-- Tiny keys on the wooden side of the case: settings, minimise, close -->
+    <!-- Tiny keys on the metal: settings, minimise, close -->
     <Style x:Key="CaseKey" TargetType="Button" BasedOn="{StaticResource FoldTab}">
-        <Setter Property="Width" Value="26"/>
-        <Setter Property="Height" Value="20"/>
-        <Setter Property="Margin" Value="0,0,0,7"/>
+        <Setter Property="Width" Value="24"/>
+        <Setter Property="Height" Value="17"/>
+        <Setter Property="Margin" Value="0,0,4,0"/>
         <Setter Property="FontFamily" Value="Segoe UI Symbol"/>
         <Setter Property="FontSize" Value="13"/>
     </Style>

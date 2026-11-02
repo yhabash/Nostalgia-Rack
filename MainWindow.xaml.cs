@@ -876,7 +876,7 @@ public partial class MainWindow : Window
 
     // ================= The window frame =================
 
-    // Drag the player by any empty bit of metal or wood.
+    // Drag the player by any empty bit of metal.
     private void Case_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         if (e.ButtonState != MouseButtonState.Pressed) return;
