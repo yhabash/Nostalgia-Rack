@@ -1,6 +1,19 @@
-# Nostalgia Rack 0.7.3
+# Nostalgia Rack 0.8.0
 
 The free hi-fi music player for Windows, in its champagne skin. (It used to be called "Amp Player".)
+
+## What's new in 0.8.0
+**The compressor works** (the first part of Milestone 7). It evens out quiet and loud passages, tuned for gentle levelling (late-night or background listening).
+- **COMP** key under the meter switches it on and off (lit = on). BYPASS switches it off along with everything else.
+- Five knobs: **THRESH** (where turning down starts, −40 to 0 dB), **RATIO** (1:1 to 10:1), **ATTACK** (1 to 200 ms), **RELEASE** (50 ms to 2 s) and **GAIN** (adds 0 to +18 dB back, so the music isn't quieter overall). Hover over a knob to see its exact value; double-click it to go back to the gentle starting position.
+- The **gain-reduction meter** now moves: it shows how many dB the compressor is turning the music down.
+- To make room for the fifth knob, the EQ sliders sit slightly closer together again.
+
+**Also new**
+- **Winamp keys:** X or C play/pause, V stop, B next, Z previous, ← / → skip. If you never changed those shortcuts, they switch over by themselves; any you changed stay as they are.
+- **Window keys** (settings, minimise, close) are now the same shape and size as the fold tab, with engraved symbols and a gap before the fold tab.
+- **Advanced settings:** no wooden frame (to match the player), a little more compact, and the mouse wheel scrolls at half the speed. Sample rate and buffer are hidden and always automatic. Crossfade is a slider from **Gapless** up to **20 seconds**. Shortcuts can now be single keys.
+- Fixed: the VU meter labels were using a fallback font.
 
 ## What's new in 0.7.3
 - **EQ banks instead of presets.** The preset list is gone. The EQ deck now has two memory keys, **BANK 1** and **BANK 2**, and a small amber window that says which one is lit.
@@ -89,12 +102,14 @@ You don't need them to subscribe with a feed address.
 
 ## Keyboard shortcuts (the originals)
 
+The transport keys follow Winamp. Single letters are ignored while you type in the search box.
+
 | Keys | Does |
 |---|---|
-| Space | Play / pause |
-| Ctrl+Space | Stop |
-| Ctrl+Right / Ctrl+Left | Next / previous song |
-| Shift+Right / Shift+Left | Skip forward / back (15 seconds) |
+| X or C | Play / pause (Winamp keys) |
+| V | Stop |
+| B / Z | Next / previous song |
+| → / ← | Skip forward / back (15 seconds) |
 | Ctrl+Up / Ctrl+Down | Volume up / down |
 | Ctrl+E | EQ on / off |
 | Ctrl+1 / Ctrl+2 | Fold the EQ / the playlist |

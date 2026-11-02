@@ -50,18 +50,11 @@ public partial class SettingsWindow : Window
         SharedMode.IsChecked = !_settings.ExclusiveMode;
         ExclusiveMode.IsChecked = _settings.ExclusiveMode;
 
-        Fill(RateCombo, _settings.SampleRate,
-             ("Automatic", 0), ("44.1 kHz", 44100), ("48 kHz", 48000), ("88.2 kHz", 88200),
-             ("96 kHz", 96000), ("176.4 kHz", 176400), ("192 kHz", 192000));
-        Fill(BufferCombo, _settings.BufferMs,
-             ("Automatic", 0), ("10 ms (lowest delay)", 10), ("20 ms", 20), ("50 ms", 50),
-             ("100 ms", 100), ("200 ms (safest)", 200));
         Fill(ResamplerCombo, _settings.ResamplerQuality,
              ("0 · Fastest", 0), ("1 · Good", 1), ("2 · Better", 2), ("3 · High", 3), ("4 · Best (recommended)", 4));
 
-        var fades = new List<(string, double)> { ("Off (gapless)", 0) };
-        for (int s = 1; s <= 12; s++) fades.Add(($"{s} second{(s == 1 ? "" : "s")}", s));
-        Fill(CrossfadeCombo, _settings.CrossfadeSeconds, fades.ToArray());
+        CrossfadeSlider.Value = Math.Clamp(Math.Round(_settings.CrossfadeSeconds), 0, 20);
+        ShowCrossfade();
 
         Fill(ReplayGainCombo, 0, ("Off", 0), ("Track", 1), ("Album", 2));
         Fill(SeekStepCombo, _settings.SeekStepSeconds,
@@ -181,15 +174,6 @@ public partial class SettingsWindow : Window
 
         var shortcut = new Shortcut(Keyboard.Modifiers, key);
 
-        // Letters and numbers alone would fire while you type in Search, so they need Ctrl or Alt.
-        bool plainTypingKey = (Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Alt)) == 0 &&
-                              (key is >= Key.A and <= Key.Z or >= Key.D0 and <= Key.D9);
-        if (plainTypingKey)
-        {
-            ShortcutMessage.Text = "Letters and numbers need Ctrl or Alt with them (they're used for typing).";
-            return;
-        }
-
         SetShortcut(action, shortcut);
         box.Text = ShortcutText(shortcut);
     }
@@ -232,10 +216,10 @@ public partial class SettingsWindow : Window
     {
         _settings.OutputDeviceId = (DeviceCombo.SelectedItem as OutputDevice)?.Id ?? "";
         _settings.ExclusiveMode = ExclusiveMode.IsChecked == true;
-        _settings.SampleRate = (int)Picked(RateCombo, 0);
-        _settings.BufferMs = (int)Picked(BufferCombo, 0);
+        _settings.SampleRate = 0;   // always automatic
+        _settings.BufferMs = 0;     // always automatic
         _settings.ResamplerQuality = (int)Picked(ResamplerCombo, 4);
-        _settings.CrossfadeSeconds = Picked(CrossfadeCombo, 0);
+        _settings.CrossfadeSeconds = CrossfadeSlider.Value;
         _settings.SeekStepSeconds = Picked(SeekStepCombo, 15);
         _settings.BluetoothLatencyMs = (int)Picked(BluetoothCombo, 0);
         _settings.NetBufferMs = (int)Picked(NetBufferCombo, 5000);
@@ -260,6 +244,22 @@ public partial class SettingsWindow : Window
     private void Title_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
         try { DragMove(); } catch (InvalidOperationException) { }
+    }
+
+    private void CrossfadeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) => ShowCrossfade();
+
+    private void ShowCrossfade()
+    {
+        if (CrossfadeText == null) return;
+        int seconds = (int)Math.Round(CrossfadeSlider.Value);
+        CrossfadeText.Text = seconds == 0 ? "GAPLESS" : $"{seconds} S";
+    }
+
+    // The mouse wheel scrolls this page at half the usual speed (24 px per notch instead of 48).
+    private void SettingsScroll_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        e.Handled = true;
+        SettingsScroll.ScrollToVerticalOffset(SettingsScroll.VerticalOffset - e.Delta / 120.0 * 24);
     }
 
     private void Link_RequestNavigate(object sender, RequestNavigateEventArgs e)

@@ -13,7 +13,7 @@
     <AssemblyName>NostalgiaRack</AssemblyName>
     <!-- 64-bit, so it matches the 64-bit BASS files -->
     <PlatformTarget>x64</PlatformTarget>
-    <Version>0.7.3</Version>
+    <Version>0.8.0</Version>
   </PropertyGroup>
 
   <!-- Libraries (Visual Studio downloads these automatically) -->

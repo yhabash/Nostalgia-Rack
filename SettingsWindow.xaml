@@ -1,6 +1,7 @@
 <!--
   SettingsWindow.xaml: Advanced settings (Ctrl+, or the ⚙ key on the case).
-  A champagne faceplate in the rosewood case, with dark glass fields like the player's display.
+  A bare champagne faceplate (like the player, no case), drawn at 85% so it sits with the
+  player's proportions, with dark glass fields like the player's display.
   Sections: Output · Playback · Internet radio · Podcasts · Library · Appearance · Keyboard shortcuts.
   What the controls do is in SettingsWindow.xaml.cs.
 -->
@@ -10,8 +11,8 @@
         Title="Advanced settings – Nostalgia Rack"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         ResizeMode="NoResize" ShowInTaskbar="False"
-        Width="600" Height="680" WindowStartupLocation="CenterOwner"
-        UseLayoutRounding="True" TextOptions.TextFormattingMode="Display"
+        SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner"
+        UseLayoutRounding="True" TextOptions.TextFormattingMode="Ideal" TextOptions.TextRenderingMode="Grayscale"
         FontFamily="{StaticResource LabelFont}">
 
     <Window.Resources>
@@ -41,15 +42,14 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
         <Style x:Key="Row" TargetType="Grid">
-            <Setter Property="Margin" Value="0,0,0,10"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
         </Style>
     </Window.Resources>
 
-    <Border Margin="12" CornerRadius="9" Background="{StaticResource RoseBrush}">
-        <Border.Effect>
-            <DropShadowEffect Color="Black" BlurRadius="20" ShadowDepth="5" Direction="270" Opacity="0.6"/>
-        </Border.Effect>
-        <Border Margin="12" Style="{StaticResource Faceplate}">
+    <Border Width="552" Height="600" Style="{StaticResource Faceplate}" BorderBrush="#86764F" BorderThickness="1">
+        <Border.LayoutTransform>
+            <ScaleTransform ScaleX="0.85" ScaleY="0.85"/>
+        </Border.LayoutTransform>
             <DockPanel>
 
                 <!-- Title strip (drag the window here) -->
@@ -73,7 +73,8 @@
                     </StackPanel>
                 </Grid>
 
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,4,16,12">
+                <ScrollViewer x:Name="SettingsScroll" VerticalScrollBarVisibility="Auto" Padding="24,4,16,12"
+                              CanContentScroll="False" PreviewMouseWheel="SettingsScroll_PreviewMouseWheel">
                     <StackPanel>
 
                         <!-- ============ OUTPUT ============ -->
@@ -100,26 +101,6 @@
 
                         <Grid Style="{StaticResource Row}">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
-                            <TextBlock Text="Sample rate" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
-                            <StackPanel Grid.Column="1">
-                                <ComboBox x:Name="RateCombo" Style="{StaticResource Field}"/>
-                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
-                                           Text="Automatic follows the device (shared) or the song (exclusive, when the device supports it)."/>
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Style="{StaticResource Row}">
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
-                            <TextBlock Text="Buffer" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
-                            <StackPanel Grid.Column="1">
-                                <ComboBox x:Name="BufferCombo" Style="{StaticResource Field}"/>
-                                <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
-                                           Text="Raise this if you hear clicks or dropouts."/>
-                            </StackPanel>
-                        </Grid>
-
-                        <Grid Style="{StaticResource Row}">
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
                             <TextBlock Text="Resampler quality" Style="{StaticResource SettingLabel}"/>
                             <ComboBox x:Name="ResamplerCombo" Grid.Column="1" Style="{StaticResource Field}"/>
                         </Grid>
@@ -131,9 +112,17 @@
                             <Grid.ColumnDefinitions><ColumnDefinition Width="170"/><ColumnDefinition/></Grid.ColumnDefinitions>
                             <TextBlock Text="Crossfade" Style="{StaticResource SettingLabel}" VerticalAlignment="Top" Margin="0,5,12,0"/>
                             <StackPanel Grid.Column="1">
-                                <ComboBox x:Name="CrossfadeCombo" Style="{StaticResource Field}"/>
+                                <Border Style="{StaticResource Glass}" Width="300" Height="26" HorizontalAlignment="Left">
+                                    <DockPanel Margin="10,0,10,0">
+                                        <TextBlock x:Name="CrossfadeText" DockPanel.Dock="Right" Width="62" TextAlignment="Right"
+                                                   Style="{StaticResource DisplayGlow}" FontSize="10" VerticalAlignment="Center" Text="GAPLESS"/>
+                                        <Slider x:Name="CrossfadeSlider" Style="{StaticResource SeekSlider}" Minimum="0" Maximum="20"
+                                                TickFrequency="1" IsSnapToTickEnabled="True" SmallChange="1" LargeChange="2"
+                                                VerticalAlignment="Center" Margin="0,0,10,0" ValueChanged="CrossfadeSlider_ValueChanged"/>
+                                    </DockPanel>
+                                </Border>
                                 <TextBlock Style="{StaticResource SettingHint}" Width="300" HorizontalAlignment="Left"
-                                           Text="Off = gapless: songs follow each other with no gap at all. Crossfade never happens between songs from the same album, or on radio."/>
+                                           Text="All the way left = gapless: songs follow each other with no gap at all. Up to 20 seconds of crossfade. It never happens between songs from the same album, or on radio."/>
                             </StackPanel>
                         </Grid>
 
@@ -245,13 +234,12 @@
                                     Margin="0,0,8,0" Click="ResetShortcuts_Click"/>
                         </Grid>
                         <TextBlock Style="{StaticResource SettingHint}" Margin="0,-4,0,10" Width="470" HorizontalAlignment="Left"
-                                   Text="Click a box and press the new keys (for example Ctrl+P). The media keys on your keyboard always work too."/>
+                                   Text="Click a box and press the new key. Single keys are best (for example X or B); combinations like Ctrl+P work too. Single letters are ignored while you type in the search box. The media keys on your keyboard always work."/>
                         <StackPanel x:Name="ShortcutPanel"/>
                         <TextBlock x:Name="ShortcutMessage" Style="{StaticResource SettingHint}" Foreground="#8A3A1E" Margin="0,4,0,0"/>
 
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>
-        </Border>
     </Border>
 </Window>

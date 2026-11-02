@@ -8,7 +8,7 @@ namespace NostalgiaRack;
 /// <summary>Things a keyboard shortcut can do.</summary>
 public enum ShortcutAction
 {
-    PlayPause, Stop, Next, Previous, SkipBack, SkipForward,
+    PlayPause, PlayPauseAlt, Stop, Next, Previous, SkipBack, SkipForward,
     VolumeUp, VolumeDown, ToggleEq, FoldEq, FoldPlaylist, SlimMode, Search, Settings
 }
 
@@ -97,6 +97,13 @@ public sealed class AppSettings
     public float[] EqBank2 { get; set; } = new float[11];
     public bool EqOn { get; set; } = true;
     public bool SoftClip { get; set; } = true;
+    // Compressor: on/off and the five knob positions (0 … 1). Defaults = gentle levelling.
+    public bool CompOn { get; set; }
+    public double CompThreshold { get; set; } = 0.55;  // −18 dB
+    public double CompRatio { get; set; } = 0.4;       // 2.5 : 1
+    public double CompAttack { get; set; } = 0.64;     // about 30 ms
+    public double CompRelease { get; set; } = 0.58;    // about 400 ms
+    public double CompGain { get; set; } = 0.22;       // about +4 dB
     public bool EqFolded { get; set; }
     public bool PlaylistFolded { get; set; }
     public bool SlimMode { get; set; }
@@ -109,12 +116,15 @@ public sealed class AppSettings
 
     public static Dictionary<string, string> DefaultShortcuts() => new()
     {
-        [nameof(ShortcutAction.PlayPause)] = "Space",
-        [nameof(ShortcutAction.Stop)] = "Ctrl+Space",
-        [nameof(ShortcutAction.Next)] = "Ctrl+Right",
-        [nameof(ShortcutAction.Previous)] = "Ctrl+Left",
-        [nameof(ShortcutAction.SkipBack)] = "Shift+Left",
-        [nameof(ShortcutAction.SkipForward)] = "Shift+Right",
+        // The transport keys follow Winamp: Z X C V B, and the arrow keys to skip.
+        // Single keys are preferred over combinations (they're quicker to hit).
+        [nameof(ShortcutAction.PlayPause)] = "X",
+        [nameof(ShortcutAction.PlayPauseAlt)] = "C",
+        [nameof(ShortcutAction.Stop)] = "V",
+        [nameof(ShortcutAction.Next)] = "B",
+        [nameof(ShortcutAction.Previous)] = "Z",
+        [nameof(ShortcutAction.SkipBack)] = "Left",
+        [nameof(ShortcutAction.SkipForward)] = "Right",
         [nameof(ShortcutAction.VolumeUp)] = "Ctrl+Up",
         [nameof(ShortcutAction.VolumeDown)] = "Ctrl+Down",
         [nameof(ShortcutAction.ToggleEq)] = "Ctrl+E",
@@ -144,6 +154,7 @@ public sealed class AppSettings
     public static string Describe(ShortcutAction action) => action switch
     {
         ShortcutAction.PlayPause => "Play / pause",
+        ShortcutAction.PlayPauseAlt => "Play / pause (second key)",
         ShortcutAction.Stop => "Stop",
         ShortcutAction.Next => "Next song",
         ShortcutAction.Previous => "Previous song",
@@ -182,9 +193,29 @@ public sealed class AppSettings
             settings = new AppSettings(); // damaged settings: start fresh rather than crash
         }
 
+        // Version 0.8 moved the transport keys to Winamp's. Keys still on the old defaults are
+        // moved across; keys you changed yourself are left alone.
+        var oldDefaults = new Dictionary<string, string>
+        {
+            [nameof(ShortcutAction.PlayPause)] = "Space",
+            [nameof(ShortcutAction.Stop)] = "Ctrl+Space",
+            [nameof(ShortcutAction.Next)] = "Ctrl+Right",
+            [nameof(ShortcutAction.Previous)] = "Ctrl+Left",
+            [nameof(ShortcutAction.SkipBack)] = "Shift+Left",
+            [nameof(ShortcutAction.SkipForward)] = "Shift+Right",
+        };
+        var newDefaults = DefaultShortcuts();
+        foreach (var (action, old) in oldDefaults)
+            if (settings.Shortcuts.TryGetValue(action, out var saved) && saved == old)
+                settings.Shortcuts[action] = newDefaults[action];
+
         // Make sure every action has an entry (new actions in later versions get their default).
         foreach (var (action, shortcut) in DefaultShortcuts())
             settings.Shortcuts.TryAdd(action, shortcut);
+        // Sample rate and buffer are always automatic now (the choices were removed from Settings).
+        settings.SampleRate = 0;
+        settings.BufferMs = 0;
+        settings.CrossfadeSeconds = Math.Clamp(settings.CrossfadeSeconds, 0, 20);
         if (settings.EqBank1.Length != 11) settings.EqBank1 = new float[11];
         if (settings.EqBank2.Length != 11) settings.EqBank2 = new float[11];
         if (settings.EqBank is < 0 or > 2) settings.EqBank = 0;

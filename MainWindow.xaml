@@ -89,15 +89,24 @@
                                                FontSize="10" Foreground="{StaticResource InkBrush}" MouseLeftButtonDown="Case_MouseLeftButtonDown">
                                         <TextBlock.Effect><DropShadowEffect Color="#FFFAE6" ShadowDepth="1" Direction="270" BlurRadius="0" Opacity="0.75"/></TextBlock.Effect>
                                     </TextBlock>
-                                    <TextBlock Canvas.Right="128" Canvas.Top="1" Text="Yazan" FontFamily="{StaticResource SignatureFont}"
+                                    <TextBlock Canvas.Right="148" Canvas.Top="1" Text="Yazan" FontFamily="{StaticResource SignatureFont}"
                                                FontSize="22" Foreground="#6B5228" IsHitTestVisible="False">
                                         <TextBlock.Effect><DropShadowEffect Color="#FFFAE6" ShadowDepth="1" Direction="270" BlurRadius="0" Opacity="0.6"/></TextBlock.Effect>
                                     </TextBlock>
                                     <!-- Settings, minimise and close, on the metal before the fold tab -->
-                                    <StackPanel Canvas.Right="40" Canvas.Top="6" Orientation="Horizontal">
-                                        <Button x:Name="SettingsKey" Style="{StaticResource CaseKey}" Content="⚙" Click="SettingsKey_Click" ToolTip="Advanced settings (Ctrl+,)"/>
-                                        <Button x:Name="MinimizeKey" Style="{StaticResource CaseKey}" Content="–" Click="MinimizeKey_Click" ToolTip="Minimise"/>
-                                        <Button x:Name="CloseKey" Style="{StaticResource CaseKey}" Content="✕" Click="CloseKey_Click" ToolTip="Close"/>
+                                    <StackPanel Canvas.Right="44" Canvas.Top="6" Orientation="Horizontal">
+                                        <Button x:Name="SettingsKey" Style="{StaticResource CaseKey}" Click="SettingsKey_Click" ToolTip="Advanced settings (Ctrl+,)">
+                                            <Canvas Width="10" Height="10">
+                                                <Path Data="{StaticResource KeySettingsLines}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.2"/>
+                                                <Path Data="{StaticResource KeySettingsCaps}" Fill="{StaticResource StencilBrush}"/>
+                                            </Canvas>
+                                        </Button>
+                                        <Button x:Name="MinimizeKey" Style="{StaticResource CaseKey}" Click="MinimizeKey_Click" ToolTip="Minimise">
+                                            <Path Data="{StaticResource KeyMinimise}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="10"/>
+                                        </Button>
+                                        <Button x:Name="CloseKey" Style="{StaticResource CaseKey}" Click="CloseKey_Click" ToolTip="Close">
+                                            <Path Data="{StaticResource KeyClose}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.6" Width="10" Height="10"/>
+                                        </Button>
                                     </StackPanel>
                                     <Button x:Name="MainFold" Canvas.Right="6" Canvas.Top="6" Style="{StaticResource FoldTab}"
                                             Click="MainFold_Click" ToolTip="Shrink to the slim strip (Ctrl+M)">
@@ -146,10 +155,10 @@
 
                                     <!-- Transport: previous, back, play, pause, stop, forward, next -->
                                     <StackPanel Canvas.Left="18" Canvas.Top="152" Orientation="Horizontal">
-                                        <Button x:Name="PrevButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Previous_Click" ToolTip="Previous (Ctrl+Left)">
+                                        <Button x:Name="PrevButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Previous_Click" ToolTip="Previous (Z)">
                                             <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconPrev}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
                                         </Button>
-                                        <Button x:Name="BackButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Back_Click" ToolTip="Skip back (Shift+Left)">
+                                        <Button x:Name="BackButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Back_Click" ToolTip="Skip back (Left arrow)">
                                             <Viewbox Style="{StaticResource Icon}">
                                                 <Canvas Width="24" Height="24">
                                                     <Path Data="{StaticResource IconBackArc}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.6"/>
@@ -159,16 +168,16 @@
                                                 </Canvas>
                                             </Viewbox>
                                         </Button>
-                                        <Button x:Name="PlayButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Play_Click" ToolTip="Play (Space)">
+                                        <Button x:Name="PlayButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Play_Click" ToolTip="Play (X or C)">
                                             <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconPlay}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
                                         </Button>
-                                        <Button x:Name="PauseButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Pause_Click" ToolTip="Pause (Space)">
+                                        <Button x:Name="PauseButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Pause_Click" ToolTip="Pause (X or C)">
                                             <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconPause}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
                                         </Button>
-                                        <Button x:Name="StopButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Stop_Click" ToolTip="Stop (Ctrl+Space)">
+                                        <Button x:Name="StopButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Stop_Click" ToolTip="Stop (V)">
                                             <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconStop}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
                                         </Button>
-                                        <Button x:Name="FwdButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Forward_Click" ToolTip="Skip forward (Shift+Right)">
+                                        <Button x:Name="FwdButton" Style="{StaticResource StencilButton}" Margin="0,0,6,0" Click="Forward_Click" ToolTip="Skip forward (Right arrow)">
                                             <Viewbox Style="{StaticResource Icon}">
                                                 <Canvas Width="24" Height="24">
                                                     <Path Data="{StaticResource IconFwdArc}" Style="{StaticResource StrokeIcon}" StrokeThickness="1.6"/>
@@ -178,7 +187,7 @@
                                                 </Canvas>
                                             </Viewbox>
                                         </Button>
-                                        <Button x:Name="NextButton" Style="{StaticResource StencilButton}" Click="Next_Click" ToolTip="Next (Ctrl+Right)">
+                                        <Button x:Name="NextButton" Style="{StaticResource StencilButton}" Click="Next_Click" ToolTip="Next (B)">
                                             <Viewbox Style="{StaticResource Icon}"><Canvas Width="24" Height="24"><Path Data="{StaticResource IconNext}" Style="{StaticResource FillIcon}"/></Canvas></Viewbox>
                                         </Button>
                                     </StackPanel>
@@ -211,23 +220,23 @@
 
                                     <TextBlock Canvas.Left="20" Canvas.Top="15" Text="GRAPHIC EQUALIZER" Style="{StaticResource Engraved}"/>
                                     <!-- EQ memory: a small amber window (BANK 1 / BANK 2 / FLAT) and the two bank keys -->
-                                    <Border Canvas.Left="196" Canvas.Top="10" Width="104" Height="26" Style="{StaticResource Glass}">
+                                    <Border Canvas.Left="180" Canvas.Top="10" Width="100" Height="26" Style="{StaticResource Glass}">
                                         <TextBlock x:Name="EqBankDisplay" Style="{StaticResource DisplayGlow}" FontSize="10.5"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center" Text="FLAT"/>
                                     </Border>
-                                    <Button x:Name="Bank1Key" Canvas.Left="310" Canvas.Top="11" Width="56" Style="{StaticResource TextKey}"
+                                    <Button x:Name="Bank1Key" Canvas.Left="290" Canvas.Top="11" Width="56" Style="{StaticResource TextKey}"
                                             Content="BANK 1" Click="Bank1_Click"
                                             ToolTip="EQ memory 1. While lit, the sliders shape and save this curve. Press again for flat."/>
-                                    <Button x:Name="Bank2Key" Canvas.Left="372" Canvas.Top="11" Width="56" Style="{StaticResource TextKey}"
+                                    <Button x:Name="Bank2Key" Canvas.Left="352" Canvas.Top="11" Width="56" Style="{StaticResource TextKey}"
                                             Content="BANK 2" Click="Bank2_Click"
                                             ToolTip="EQ memory 2. While lit, the sliders shape and save this curve. Press again for flat."/>
 
                                     <!-- Engraved dB lines behind the sliders -->
-                                    <Border Canvas.Left="44" Canvas.Top="50" Width="386" Height="1" Background="#4746320F"/>
-                                    <Border Canvas.Left="44" Canvas.Top="75" Width="386" Height="1" Background="#4746320F" Opacity="0.5"/>
-                                    <Border Canvas.Left="44" Canvas.Top="100" Width="386" Height="1" Background="#4746320F"/>
-                                    <Border Canvas.Left="44" Canvas.Top="125" Width="386" Height="1" Background="#4746320F" Opacity="0.5"/>
-                                    <Border Canvas.Left="44" Canvas.Top="150" Width="386" Height="1" Background="#4746320F"/>
+                                    <Border Canvas.Left="44" Canvas.Top="50" Width="366" Height="1" Background="#4746320F"/>
+                                    <Border Canvas.Left="44" Canvas.Top="75" Width="366" Height="1" Background="#4746320F" Opacity="0.5"/>
+                                    <Border Canvas.Left="44" Canvas.Top="100" Width="366" Height="1" Background="#4746320F"/>
+                                    <Border Canvas.Left="44" Canvas.Top="125" Width="366" Height="1" Background="#4746320F" Opacity="0.5"/>
+                                    <Border Canvas.Left="44" Canvas.Top="150" Width="366" Height="1" Background="#4746320F"/>
                                     <TextBlock Canvas.Left="14" Canvas.Top="45" Width="26" TextAlignment="Right" Text="+12" Style="{StaticResource EngravedTiny}"/>
                                     <TextBlock Canvas.Left="14" Canvas.Top="95" Width="26" TextAlignment="Right" Text="0" Style="{StaticResource EngravedTiny}"/>
                                     <TextBlock Canvas.Left="14" Canvas.Top="145" Width="26" TextAlignment="Right" Text="−12" Style="{StaticResource EngravedTiny}"/>
@@ -240,27 +249,30 @@
                                     </StackPanel>
                                     <Border Canvas.Left="84" Canvas.Top="46" Height="120" Style="{StaticResource PinV}"/>
                                     <StackPanel x:Name="BandPanel" Canvas.Left="90" Canvas.Top="44" Orientation="Horizontal">
-                                        <StackPanel Width="34"><Slider Tag="0" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="31" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="1" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="62" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="2" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="125" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="3" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="250" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="4" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="500" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="5" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="1K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="6" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="2K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="7" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="4K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="8" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="8K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="34"><Slider Tag="9" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="16K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="0" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="31" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="1" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="62" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="2" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="125" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="3" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="250" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="4" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="500" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="5" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="1K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="6" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="2K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="7" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="4K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="8" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="8K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="32"><Slider Tag="9" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="16K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
                                     </StackPanel>
 
                                     <!-- Compressor side -->
-                                    <Border Canvas.Left="448" Canvas.Top="14" Height="172" Style="{StaticResource PinV}"/>
-                                    <TextBlock Canvas.Left="462" Canvas.Top="15" Text="COMPRESSOR" Style="{StaticResource Engraved}"/>
-                                    <local:VuMeter x:Name="GrMeter" Canvas.Left="462" Canvas.Top="34" Width="92" Height="57" IsGainReduction="True" Level="0"
-                                                   ToolTip="Gain reduction: how hard the compressor works (compressor arrives in Milestone 7)"/>
-                                    <Button x:Name="SoftClipKey" Canvas.Left="462" Canvas.Top="94" Width="92" Height="20" Style="{StaticResource TextKey}"
+                                    <Border Canvas.Left="426" Canvas.Top="14" Height="172" Style="{StaticResource PinV}"/>
+                                    <TextBlock Canvas.Left="440" Canvas.Top="15" Text="COMPRESSOR" Style="{StaticResource Engraved}"/>
+                                    <local:VuMeter x:Name="GrMeter" Canvas.Left="440" Canvas.Top="34" Width="92" Height="57" IsGainReduction="True" Level="0"
+                                                   ToolTip="Gain reduction: how many dB the compressor is turning the music down right now"/>
+                                    <Button x:Name="CompKey" Canvas.Left="440" Canvas.Top="100" Width="56" Height="20" Style="{StaticResource TextKey}"
+                                            FontSize="10" Padding="0" Content="COMP" Click="CompKey_Click"
+                                            ToolTip="Compressor on / off (lit = on). Evens out quiet and loud passages."/>
+                                    <Button x:Name="SoftClipKey" Canvas.Left="500" Canvas.Top="100" Width="84" Height="20" Style="{StaticResource TextKey}"
                                             FontSize="10" Padding="0" Content="SOFT CLIP" Click="SoftClipKey_Click"
                                             ToolTip="Rounds off loud peaks smoothly instead of letting them crackle (lit = on)"/>
-                                    <StackPanel Canvas.Left="564" Canvas.Top="34" Orientation="Horizontal">
+                                    <StackPanel Canvas.Left="548" Canvas.Top="34" Orientation="Horizontal">
                                         <StackPanel Margin="0,0,8,0">
                                             <Button x:Name="EqOnButton" Style="{StaticResource StencilButton}" Click="EqOnButton_Click" ToolTip="EQ on / off (Ctrl+E)">
                                                 <Viewbox Style="{StaticResource Icon}">
@@ -280,12 +292,33 @@
                                             <TextBlock Text="BYPASS" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
                                         </StackPanel>
                                     </StackPanel>
-                                    <StackPanel Canvas.Left="462" Canvas.Top="116" Orientation="Horizontal"
-                                                ToolTip="The compressor arrives in Milestone 7">
-                                        <StackPanel Width="46" Margin="0,0,4,0"><local:Knob Width="46" Height="46" IsEnabled="False" Value="0.4"/><TextBlock Text="THRESH" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
-                                        <StackPanel Width="46" Margin="0,0,4,0"><local:Knob Width="46" Height="46" IsEnabled="False" Value="0.3"/><TextBlock Text="RATIO" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
-                                        <StackPanel Width="46" Margin="0,0,4,0"><local:Knob Width="46" Height="46" IsEnabled="False" Value="0.2"/><TextBlock Text="ATTACK" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
-                                        <StackPanel Width="46"><local:Knob Width="46" Height="46" IsEnabled="False" Value="0.55"/><TextBlock Text="RELEASE" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/></StackPanel>
+                                    <!-- The five compressor knobs (double-click a knob for its starting position) -->
+                                    <StackPanel Canvas.Left="440" Canvas.Top="124" Orientation="Horizontal">
+                                        <StackPanel Width="44" Margin="0,0,2,0">
+                                            <local:Knob x:Name="CompThresholdKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.55"
+                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Threshold: the level where turning down starts"/>
+                                            <TextBlock Text="THRESH" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Width="44" Margin="0,0,2,0">
+                                            <local:Knob x:Name="CompRatioKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.4"
+                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Ratio: how strongly loud parts are turned down"/>
+                                            <TextBlock Text="RATIO" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Width="44" Margin="0,0,2,0">
+                                            <local:Knob x:Name="CompAttackKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.64"
+                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Attack: how quickly it reacts to a loud part"/>
+                                            <TextBlock Text="ATTACK" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Width="44" Margin="0,0,2,0">
+                                            <local:Knob x:Name="CompReleaseKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.58"
+                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Release: how slowly it lets go afterwards"/>
+                                            <TextBlock Text="RELEASE" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Width="44">
+                                            <local:Knob x:Name="CompGainKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.22"
+                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Gain: adds volume back so the music isn't quieter overall"/>
+                                            <TextBlock Text="GAIN" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Canvas>
                             </Grid>
@@ -440,10 +473,19 @@
                                             Margin="8,0,0,0" Click="MainFold_Click" ToolTip="Open the full player (Ctrl+M)">
                                         <Path Data="{StaticResource ChevronDown}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
                                     </Button>
-                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,0,0">
-                                        <Button Style="{StaticResource CaseKey}" Content="⚙" Click="SettingsKey_Click" ToolTip="Advanced settings (Ctrl+,)"/>
-                                        <Button Style="{StaticResource CaseKey}" Content="–" Click="MinimizeKey_Click" ToolTip="Minimise"/>
-                                        <Button Style="{StaticResource CaseKey}" Content="✕" Click="CloseKey_Click" ToolTip="Close"/>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,8,0">
+                                        <Button Style="{StaticResource CaseKey}" Click="SettingsKey_Click" ToolTip="Advanced settings (Ctrl+,)">
+                                            <Canvas Width="10" Height="10">
+                                                <Path Data="{StaticResource KeySettingsLines}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.2"/>
+                                                <Path Data="{StaticResource KeySettingsCaps}" Fill="{StaticResource StencilBrush}"/>
+                                            </Canvas>
+                                        </Button>
+                                        <Button Style="{StaticResource CaseKey}" Click="MinimizeKey_Click" ToolTip="Minimise">
+                                            <Path Data="{StaticResource KeyMinimise}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="10"/>
+                                        </Button>
+                                        <Button Style="{StaticResource CaseKey}" Click="CloseKey_Click" ToolTip="Close">
+                                            <Path Data="{StaticResource KeyClose}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.6" Width="10" Height="10"/>
+                                        </Button>
                                     </StackPanel>
                                     <Grid DockPanel.Dock="Right" Width="38" Height="38" Margin="8,0,0,0">
                                         <local:Knob x:Name="SlimVolume" Minimum="0" Maximum="1" DefaultValue="0.8" ValueChanged="SlimVolume_ValueChanged" ToolTip="Volume"/>

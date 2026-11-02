@@ -78,6 +78,8 @@ public partial class MainWindow : Window
     // and where each needle is now.
     private readonly Queue<(DateTime time, float left, float right)> _levelHistory = new();
     private double _needleLeft = -40, _needleRight = -40;
+    private double _needleGr;
+    private bool _loadingComp;            // true while the compressor knobs are being set from saved settings
     private DateTime _lastScreenUpdate = DateTime.UtcNow;
 
 
@@ -187,6 +189,7 @@ public partial class MainWindow : Window
 
         _engine.Equalizer.SetEnabled(_settings.EqOn);
         _engine.Output.SoftClipEnabled = _settings.SoftClip;
+        RestoreCompressor();
         UpdateEqLights();
         UpdateSkipLabels();
 
@@ -603,6 +606,12 @@ public partial class MainWindow : Window
         _needleLeft = Ballistics(_needleLeft, targetLeft, dt);
         _needleRight = Ballistics(_needleRight, targetRight, dt);
         if (MainDeck.Visibility == Visibility.Visible) { VuLeft.Level = _needleLeft; VuRight.Level = _needleRight; }
+
+        // Gain-reduction needle: swings over quickly when the compressor bites, settles back slowly.
+        double grTarget = _engine.IsPlaying ? _engine.Compressor.GainReductionDb : 0;
+        double grTau = grTarget > _needleGr ? 0.05 : 0.4;
+        _needleGr += (grTarget - _needleGr) * (1 - Math.Exp(-dt / grTau));
+        if (EqDeck.Visibility == Visibility.Visible) GrMeter.Level = _needleGr;
         else { SlimVuLeft.Level = _needleLeft; SlimVuRight.Level = _needleRight; }
 
         // --- Time and seek bar (4 times a second is plenty) ---
@@ -750,14 +759,14 @@ public partial class MainWindow : Window
     {
         if (sender is not Slider slider || !int.TryParse(slider.Tag?.ToString(), out int band)) return;
         _engine.Equalizer.SetBand(band, (float)e.NewValue);
-        _engine.Output.BoostActive = _engine.Equalizer.IsBoosting;
+        UpdateBoost();
         StoreInBank(band, (float)e.NewValue);
     }
 
     private void Preamp_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
     {
         _engine.Equalizer.SetPreamp((float)e.NewValue);
-        _engine.Output.BoostActive = _engine.Equalizer.IsBoosting;
+        UpdateBoost();
         StoreInBank(10, (float)e.NewValue);
     }
 
@@ -822,6 +831,68 @@ public partial class MainWindow : Window
         if (sender is Slider slider) slider.Value = 0;
     }
 
+    // ---- Compressor ----
+
+    // Puts the saved knob positions back and sends them to the compressor.
+    private void RestoreCompressor()
+    {
+        _loadingComp = true;
+        CompThresholdKnob.Value = _settings.CompThreshold;
+        CompRatioKnob.Value = _settings.CompRatio;
+        CompAttackKnob.Value = _settings.CompAttack;
+        CompReleaseKnob.Value = _settings.CompRelease;
+        CompGainKnob.Value = _settings.CompGain;
+        _loadingComp = false;
+        ApplyCompressor();
+        _engine.Compressor.Enabled = _settings.CompOn && !_bypass;
+    }
+
+    private void CompKnob_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (_loadingComp || CompGainKnob == null) return; // still building the window
+        ApplyCompressor();
+        SaveSettingsSoon();
+    }
+
+    // Reads the five knobs, sends the values to the compressor, and shows them in the tooltips.
+    private void ApplyCompressor()
+    {
+        _settings.CompThreshold = CompThresholdKnob.Value;
+        _settings.CompRatio = CompRatioKnob.Value;
+        _settings.CompAttack = CompAttackKnob.Value;
+        _settings.CompRelease = CompReleaseKnob.Value;
+        _settings.CompGain = CompGainKnob.Value;
+
+        float threshold = Compressor.ThresholdFromKnob(_settings.CompThreshold);
+        float ratio = Compressor.RatioFromKnob(_settings.CompRatio);
+        float attack = Compressor.AttackFromKnob(_settings.CompAttack);
+        float release = Compressor.ReleaseFromKnob(_settings.CompRelease);
+        float gain = Compressor.GainFromKnob(_settings.CompGain);
+        _engine.Compressor.Set(threshold, ratio, attack, release, gain);
+
+        CompThresholdKnob.ToolTip = $"Threshold {threshold:0} dB: the level where turning down starts";
+        CompRatioKnob.ToolTip = $"Ratio {ratio:0.0}:1: how strongly loud parts are turned down";
+        CompAttackKnob.ToolTip = $"Attack {attack:0} ms: how quickly it reacts to a loud part";
+        CompReleaseKnob.ToolTip = release >= 1000 ? $"Release {release / 1000:0.0} s: how slowly it lets go afterwards"
+                                                  : $"Release {release:0} ms: how slowly it lets go afterwards";
+        CompGainKnob.ToolTip = $"Gain +{gain:0.0} dB: adds volume back so the music isn't quieter overall";
+        UpdateBoost();
+    }
+
+    private void CompKey_Click(object sender, RoutedEventArgs e)
+    {
+        if (_bypass) SetBypass(false);
+        _settings.CompOn = !_settings.CompOn;
+        _engine.Compressor.Enabled = _settings.CompOn;
+        UpdateEqLights();
+        ShowStatus(_settings.CompOn ? "COMPRESSOR ON" : "COMPRESSOR OFF");
+        SaveSettingsSoon();
+    }
+
+    // The soft clipper only works while something boosts the level (EQ, preamp or compressor gain).
+    private void UpdateBoost() =>
+        _engine.Output.BoostActive = _engine.Equalizer.IsBoosting || _engine.Compressor.IsBoosting;
+
     private void EqOnButton_Click(object sender, RoutedEventArgs e) => ToggleEq();
 
     private void ToggleEq()
@@ -849,6 +920,7 @@ public partial class MainWindow : Window
         _bypass = on;
         _engine.Equalizer.SetEnabled(!on && _settings.EqOn);
         _engine.Output.SoftClipEnabled = !on && _settings.SoftClip;
+        _engine.Compressor.Enabled = !on && _settings.CompOn;
         UpdateEqLights();
         RestoreStatusLine();
         ShowStatus(on ? "BYPASS · PURE SIGNAL" : "BYPASS OFF");
@@ -860,7 +932,8 @@ public partial class MainWindow : Window
         SkinProps.SetLit(BypassButton, _bypass);
         SkinProps.SetLit(SoftClipKey, _settings.SoftClip && !_bypass);
         SkinProps.SetLit(EqFoldedLamp, _settings.EqOn && !_bypass);
-        _engine.Output.BoostActive = _engine.Equalizer.IsBoosting;
+        SkinProps.SetLit(CompKey, _settings.CompOn && !_bypass);
+        UpdateBoost();
     }
 
     // ================= Folding the decks, and the slim strip =================
@@ -918,6 +991,7 @@ public partial class MainWindow : Window
         switch (action.Value)
         {
             case ShortcutAction.PlayPause:
+            case ShortcutAction.PlayPauseAlt:
                 if (_engine.IsPlaying) { _engine.Pause(); UpdateTransportLights(); } else await PlayOrResumeAsync();
                 break;
             case ShortcutAction.Stop: Stop_Click(this, e); break;
@@ -960,6 +1034,8 @@ public partial class MainWindow : Window
         updated.Volume = VolumeKnob.Value; updated.Balance = BalanceKnob.Value;
         updated.EqBank = old.EqBank; updated.EqBank1 = old.EqBank1; updated.EqBank2 = old.EqBank2;
         updated.EqOn = old.EqOn; updated.SoftClip = old.SoftClip;
+        updated.CompOn = old.CompOn; updated.CompThreshold = old.CompThreshold; updated.CompRatio = old.CompRatio;
+        updated.CompAttack = old.CompAttack; updated.CompRelease = old.CompRelease; updated.CompGain = old.CompGain;
         updated.EqFolded = old.EqFolded; updated.PlaylistFolded = old.PlaylistFolded; updated.SlimMode = old.SlimMode;
         _settings = updated;
 

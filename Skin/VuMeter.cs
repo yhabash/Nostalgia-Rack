@@ -63,7 +63,7 @@ public sealed class VuMeter : FrameworkElement
     private static readonly Brush RedBrush = Freeze(new SolidColorBrush(Color.FromRgb(0xB3, 0x26, 0x1E)));
     private static readonly Brush NeedleBrush = Freeze(new SolidColorBrush(Color.FromRgb(0x1C, 0x17, 0x12)));
     private static readonly Brush PivotBrush = Freeze(new RadialGradientBrush(Color.FromRgb(0x3C, 0x3A, 0x36), Color.FromRgb(0x0B, 0x0B, 0x0A)));
-    private static readonly Typeface LabelFont = new(new FontFamily(new Uri("pack://application:,,,/"), "./Skin/Fonts/#Jost"),
+    private static readonly Typeface LabelFont = new(new FontFamily(new Uri("pack://application:,,,/"), "./Skin/Fonts/#Rack Jost"),
                                                      FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 
     private static T Freeze<T>(T f) where T : Freezable { f.Freeze(); return f; }

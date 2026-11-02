@@ -117,9 +117,10 @@ public sealed class Equalizer
 
     private void AddEffects()
     {
-        // Higher priority runs first: preamp (2), then EQ (1). The output stage runs last (0).
-        _preampDsp = Bass.ChannelSetDSP(_channel, _preampProcedure, IntPtr.Zero, 2);
-        _eqEffect = Bass.ChannelSetFX(_channel, EffectType.PeakEQ, 1);
+        // Higher priority runs first: preamp (3), then EQ (2), then the compressor (1),
+        // and the output stage last (0).
+        _preampDsp = Bass.ChannelSetDSP(_channel, _preampProcedure, IntPtr.Zero, 3);
+        _eqEffect = Bass.ChannelSetFX(_channel, EffectType.PeakEQ, 2);
 
         for (int band = 0; band < Frequencies.Length; band++)
             ApplyBand(band);

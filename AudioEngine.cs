@@ -138,6 +138,9 @@ public sealed class AudioEngine : IDisposable
         _stallSync = OnStall;
     }
 
+    /// <summary>The compressor (Compressor.cs), after the EQ and before the volume.</summary>
+    public Compressor Compressor { get; } = new();
+
     /// <summary>The 10-band EQ and preamp (Equalizer.cs).</summary>
     public Equalizer Equalizer { get; } = new();
 
@@ -302,6 +305,7 @@ public sealed class AudioEngine : IDisposable
         _mixer = BassMix.CreateMixerStream(rate, channels, BassFlags.Float | BassFlags.Decode | BassFlags.MixerNonStop);
 
         Equalizer.Attach(_mixer);
+        Compressor.Attach(_mixer);
         Output.Attach(_mixer);
 
         foreach (var source in new[] { _fadingOut, _current })
