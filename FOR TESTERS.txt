@@ -1,0 +1,27 @@
+NOSTALGIA RACK - test build
+===========================
+
+Thanks for testing! Nostalgia Rack is a free hi-fi music player for Windows 10/11 (64-bit).
+
+STARTING IT
+1. Unzip the whole folder somewhere (for example your Documents). Don't run it from inside the zip.
+2. Double-click NostalgiaRack.exe.
+3. Windows may say "Windows protected your PC". That's because this test build isn't signed yet.
+   Click "More info", then "Run anyway".
+
+NOTHING IS INSTALLED
+Everything it needs is in this folder. Your library and settings are kept in
+%LocalAppData%\NostalgiaRack (paste that into File Explorer's address bar to see it).
+To remove it completely, delete this folder and that one.
+
+TRY THESE
+- Drop a folder of music onto the playlist, double-click a song.
+- The EQ deck, the VU meters, crossfade (gear key, top right).
+- RADIO > TOP STATIONS, and PODCASTS > ADD FEED.
+- Fold the decks with the little tabs, or press Ctrl+M for the slim strip.
+
+FEEDBACK
+Tell Yazan what you liked, what broke, and what confused you. Screenshots help a lot.
+If an error box appears, press Ctrl+C on it and paste the text in your message.
+
+The compressor knobs on the EQ deck don't work yet; they're coming in the next version.
