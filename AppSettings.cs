@@ -9,7 +9,7 @@ namespace NostalgiaRack;
 public enum ShortcutAction
 {
     PlayPause, PlayPauseAlt, Stop, Next, Previous, SkipBack, SkipForward,
-    VolumeUp, VolumeDown, ToggleEq, FoldEq, FoldPlaylist, SlimMode, Search, Settings
+    VolumeUp, VolumeDown, ToggleEq, FoldEq, FoldDynamics, FoldPlaylist, SlimMode, Search, Settings
 }
 
 /// <summary>A key with optional Ctrl / Shift / Alt, e.g. "Ctrl+Right".</summary>
@@ -97,14 +97,14 @@ public sealed class AppSettings
     public float[] EqBank2 { get; set; } = new float[11];
     public bool EqOn { get; set; } = true;
     public bool SoftClip { get; set; } = true;
-    // Compressor: on/off and the five knob positions (0 … 1). Defaults = gentle levelling.
+    // Compressor: on/off and the three knob positions (0 … 1). Defaults = gentle levelling.
+    // Attack and release are fixed at gentle values (see Compressor.cs).
     public bool CompOn { get; set; }
     public double CompThreshold { get; set; } = 0.55;  // −18 dB
     public double CompRatio { get; set; } = 0.4;       // 2.5 : 1
-    public double CompAttack { get; set; } = 0.64;     // about 30 ms
-    public double CompRelease { get; set; } = 0.58;    // about 400 ms
     public double CompGain { get; set; } = 0.22;       // about +4 dB
     public bool EqFolded { get; set; }
+    public bool DynFolded { get; set; }
     public bool PlaylistFolded { get; set; }
     public bool SlimMode { get; set; }
     public double WindowLeft { get; set; } = double.NaN;
@@ -129,6 +129,7 @@ public sealed class AppSettings
         [nameof(ShortcutAction.VolumeDown)] = "Ctrl+Down",
         [nameof(ShortcutAction.ToggleEq)] = "Ctrl+E",
         [nameof(ShortcutAction.FoldEq)] = "Ctrl+1",
+        [nameof(ShortcutAction.FoldDynamics)] = "Ctrl+3",
         [nameof(ShortcutAction.FoldPlaylist)] = "Ctrl+2",
         [nameof(ShortcutAction.SlimMode)] = "Ctrl+M",
         [nameof(ShortcutAction.Search)] = "Ctrl+F",
@@ -164,6 +165,7 @@ public sealed class AppSettings
         ShortcutAction.VolumeDown => "Volume down",
         ShortcutAction.ToggleEq => "EQ on / off",
         ShortcutAction.FoldEq => "Fold / unfold the EQ deck",
+        ShortcutAction.FoldDynamics => "Fold / unfold the dynamics deck",
         ShortcutAction.FoldPlaylist => "Fold / unfold the playlist deck",
         ShortcutAction.SlimMode => "Slim strip on / off",
         ShortcutAction.Search => "Search",

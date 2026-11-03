@@ -220,60 +220,51 @@
 
                                     <TextBlock Canvas.Left="20" Canvas.Top="15" Text="GRAPHIC EQUALIZER" Style="{StaticResource Engraved}"/>
                                     <!-- EQ memory: a small amber window (BANK 1 / BANK 2 / FLAT) and the two bank keys -->
-                                    <Border Canvas.Left="180" Canvas.Top="10" Width="100" Height="26" Style="{StaticResource Glass}">
+                                    <Border Canvas.Left="200" Canvas.Top="10" Width="110" Height="26" Style="{StaticResource Glass}">
                                         <TextBlock x:Name="EqBankDisplay" Style="{StaticResource DisplayGlow}" FontSize="10.5"
                                                    HorizontalAlignment="Center" VerticalAlignment="Center" Text="FLAT"/>
                                     </Border>
-                                    <Button x:Name="Bank1Key" Canvas.Left="290" Canvas.Top="11" Width="56" Style="{StaticResource TextKey}"
+                                    <Button x:Name="Bank1Key" Canvas.Left="322" Canvas.Top="11" Width="60" Style="{StaticResource TextKey}"
                                             Content="BANK 1" Click="Bank1_Click"
                                             ToolTip="EQ memory 1. While lit, the sliders shape and save this curve. Press again for flat."/>
-                                    <Button x:Name="Bank2Key" Canvas.Left="352" Canvas.Top="11" Width="56" Style="{StaticResource TextKey}"
+                                    <Button x:Name="Bank2Key" Canvas.Left="388" Canvas.Top="11" Width="60" Style="{StaticResource TextKey}"
                                             Content="BANK 2" Click="Bank2_Click"
                                             ToolTip="EQ memory 2. While lit, the sliders shape and save this curve. Press again for flat."/>
 
                                     <!-- Engraved dB lines behind the sliders -->
-                                    <Border Canvas.Left="44" Canvas.Top="50" Width="366" Height="1" Background="#4746320F"/>
-                                    <Border Canvas.Left="44" Canvas.Top="75" Width="366" Height="1" Background="#4746320F" Opacity="0.5"/>
-                                    <Border Canvas.Left="44" Canvas.Top="100" Width="366" Height="1" Background="#4746320F"/>
-                                    <Border Canvas.Left="44" Canvas.Top="125" Width="366" Height="1" Background="#4746320F" Opacity="0.5"/>
-                                    <Border Canvas.Left="44" Canvas.Top="150" Width="366" Height="1" Background="#4746320F"/>
+                                    <Border Canvas.Left="44" Canvas.Top="50" Width="480" Height="1" Background="#4746320F"/>
+                                    <Border Canvas.Left="44" Canvas.Top="75" Width="480" Height="1" Background="#4746320F" Opacity="0.5"/>
+                                    <Border Canvas.Left="44" Canvas.Top="100" Width="480" Height="1" Background="#4746320F"/>
+                                    <Border Canvas.Left="44" Canvas.Top="125" Width="480" Height="1" Background="#4746320F" Opacity="0.5"/>
+                                    <Border Canvas.Left="44" Canvas.Top="150" Width="480" Height="1" Background="#4746320F"/>
                                     <TextBlock Canvas.Left="14" Canvas.Top="45" Width="26" TextAlignment="Right" Text="+12" Style="{StaticResource EngravedTiny}"/>
                                     <TextBlock Canvas.Left="14" Canvas.Top="95" Width="26" TextAlignment="Right" Text="0" Style="{StaticResource EngravedTiny}"/>
                                     <TextBlock Canvas.Left="14" Canvas.Top="145" Width="26" TextAlignment="Right" Text="−12" Style="{StaticResource EngravedTiny}"/>
 
                                     <!-- Preamp, a gold divider, then the 10 bands. Tag = which band (0 to 9). -->
-                                    <StackPanel Canvas.Left="44" Canvas.Top="44" Width="34">
+                                    <StackPanel Canvas.Left="46" Canvas.Top="44" Width="42">
                                         <Slider x:Name="PreampSlider" Style="{StaticResource EqSlider}" ValueChanged="Preamp_ValueChanged"
                                                 MouseDoubleClick="EqSlider_DoubleClick" ToolTip="Preamp (double-click for 0 dB)"/>
                                         <TextBlock Text="PRE" Style="{StaticResource EngravedTiny}" FontWeight="Medium" HorizontalAlignment="Center" Margin="0,4,0,0"/>
                                     </StackPanel>
-                                    <Border Canvas.Left="84" Canvas.Top="46" Height="120" Style="{StaticResource PinV}"/>
-                                    <StackPanel x:Name="BandPanel" Canvas.Left="90" Canvas.Top="44" Orientation="Horizontal">
-                                        <StackPanel Width="32"><Slider Tag="0" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="31" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="1" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="62" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="2" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="125" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="3" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="250" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="4" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="500" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="5" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="1K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="6" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="2K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="7" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="4K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="8" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="8K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
-                                        <StackPanel Width="32"><Slider Tag="9" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="16K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                    <Border Canvas.Left="96" Canvas.Top="46" Height="120" Style="{StaticResource PinV}"/>
+                                    <StackPanel x:Name="BandPanel" Canvas.Left="102" Canvas.Top="44" Orientation="Horizontal">
+                                        <StackPanel Width="42"><Slider Tag="0" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="31" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="1" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="62" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="2" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="125" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="3" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="250" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="4" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="500" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="5" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="1K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="6" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="2K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="7" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="4K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="8" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="8K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
+                                        <StackPanel Width="42"><Slider Tag="9" Style="{StaticResource EqSlider}" ValueChanged="Band_ValueChanged" MouseDoubleClick="EqSlider_DoubleClick"/><TextBlock Text="16K" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,4,0,0"/></StackPanel>
                                     </StackPanel>
 
-                                    <!-- Compressor side -->
-                                    <Border Canvas.Left="426" Canvas.Top="14" Height="172" Style="{StaticResource PinV}"/>
-                                    <TextBlock Canvas.Left="440" Canvas.Top="15" Text="COMPRESSOR" Style="{StaticResource Engraved}"/>
-                                    <local:VuMeter x:Name="GrMeter" Canvas.Left="440" Canvas.Top="34" Width="92" Height="57" IsGainReduction="True" Level="0"
-                                                   ToolTip="Gain reduction: how many dB the compressor is turning the music down right now"/>
-                                    <Button x:Name="CompKey" Canvas.Left="440" Canvas.Top="100" Width="56" Height="20" Style="{StaticResource TextKey}"
-                                            FontSize="10" Padding="0" Content="COMP" Click="CompKey_Click"
-                                            ToolTip="Compressor on / off (lit = on). Evens out quiet and loud passages."/>
-                                    <Button x:Name="SoftClipKey" Canvas.Left="500" Canvas.Top="100" Width="84" Height="20" Style="{StaticResource TextKey}"
-                                            FontSize="10" Padding="0" Content="SOFT CLIP" Click="SoftClipKey_Click"
-                                            ToolTip="Rounds off loud peaks smoothly instead of letting them crackle (lit = on)"/>
-                                    <StackPanel Canvas.Left="548" Canvas.Top="34" Orientation="Horizontal">
-                                        <StackPanel Margin="0,0,8,0">
+                                    <!-- EQ on / off and the master bypass -->
+                                    <Border Canvas.Left="548" Canvas.Top="40" Height="120" Style="{StaticResource PinV}"/>
+                                    <StackPanel Canvas.Left="566" Canvas.Top="66" Orientation="Horizontal">
+                                        <StackPanel Margin="0,0,14,0">
                                             <Button x:Name="EqOnButton" Style="{StaticResource StencilButton}" Click="EqOnButton_Click" ToolTip="EQ on / off (Ctrl+E)">
                                                 <Viewbox Style="{StaticResource Icon}">
                                                     <Canvas Width="24" Height="24">
@@ -292,34 +283,6 @@
                                             <TextBlock Text="BYPASS" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,6,0,0"/>
                                         </StackPanel>
                                     </StackPanel>
-                                    <!-- The five compressor knobs (double-click a knob for its starting position) -->
-                                    <StackPanel Canvas.Left="440" Canvas.Top="124" Orientation="Horizontal">
-                                        <StackPanel Width="44" Margin="0,0,2,0">
-                                            <local:Knob x:Name="CompThresholdKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.55"
-                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Threshold: the level where turning down starts"/>
-                                            <TextBlock Text="THRESH" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel Width="44" Margin="0,0,2,0">
-                                            <local:Knob x:Name="CompRatioKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.4"
-                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Ratio: how strongly loud parts are turned down"/>
-                                            <TextBlock Text="RATIO" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel Width="44" Margin="0,0,2,0">
-                                            <local:Knob x:Name="CompAttackKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.64"
-                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Attack: how quickly it reacts to a loud part"/>
-                                            <TextBlock Text="ATTACK" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel Width="44" Margin="0,0,2,0">
-                                            <local:Knob x:Name="CompReleaseKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.58"
-                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Release: how slowly it lets go afterwards"/>
-                                            <TextBlock Text="RELEASE" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                        </StackPanel>
-                                        <StackPanel Width="44">
-                                            <local:Knob x:Name="CompGainKnob" Width="40" Height="40" Minimum="0" Maximum="1" DefaultValue="0.22"
-                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Gain: adds volume back so the music isn't quieter overall"/>
-                                            <TextBlock Text="GAIN" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                        </StackPanel>
-                                    </StackPanel>
                                 </Canvas>
                             </Grid>
                         </Border>
@@ -334,6 +297,68 @@
                                     <Ellipse x:Name="EqFoldedLamp" Style="{StaticResource Lamp}" VerticalAlignment="Center" Margin="0,0,12,0"
                                              ToolTip="Lit while the EQ is on"/>
                                     <Button Style="{StaticResource FoldTab}" Click="EqFold_Click" ToolTip="Unfold the EQ (Ctrl+1)">
+                                        <Path Data="{StaticResource ChevronDown}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- ===================== DYNAMICS DECK =====================
+                             The compressor (gain-reduction meter, COMP and SOFT CLIP keys, three knobs).
+                             The empty right side is kept for the limiter and ReplayGain (Milestone 7). -->
+                        <Border x:Name="DynSeam" Style="{StaticResource Seam}"/>
+                        <Border x:Name="DynDeck" Style="{StaticResource Faceplate}" Width="678" Height="124">
+                            <Grid>
+                                <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
+                                <Canvas>
+                                    <Ellipse Canvas.Left="7" Canvas.Bottom="7" Style="{StaticResource Screw}"/>
+                                    <Ellipse Canvas.Right="7" Canvas.Bottom="7" Style="{StaticResource Screw}"/>
+                                    <Button x:Name="DynFold" Canvas.Right="6" Canvas.Top="6" Style="{StaticResource FoldTab}"
+                                            Click="DynFold_Click" ToolTip="Fold away the dynamics deck (Ctrl+3)">
+                                        <Path Data="{StaticResource ChevronUp}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
+                                    </Button>
+
+                                    <TextBlock Canvas.Left="20" Canvas.Top="15" Text="DYNAMICS" Style="{StaticResource Engraved}"/>
+                                    <local:VuMeter x:Name="GrMeter" Canvas.Left="20" Canvas.Top="38" Width="116" Height="72" IsGainReduction="True" Level="0"
+                                                   ToolTip="Gain reduction: how many dB the compressor is turning the music down right now"/>
+                                    <Button x:Name="CompKey" Canvas.Left="152" Canvas.Top="44" Width="88" Height="24" Style="{StaticResource TextKey}"
+                                            Content="COMP" Click="CompKey_Click"
+                                            ToolTip="Compressor on / off (lit = on). Evens out quiet and loud passages."/>
+                                    <Button x:Name="SoftClipKey" Canvas.Left="152" Canvas.Top="80" Width="88" Height="24" Style="{StaticResource TextKey}"
+                                            Content="SOFT CLIP" Click="SoftClipKey_Click"
+                                            ToolTip="Rounds off loud peaks smoothly instead of letting them crackle (lit = on)"/>
+                                    <!-- The compressor knobs (double-click a knob for its starting position) -->
+                                    <StackPanel Canvas.Left="256" Canvas.Top="38" Orientation="Horizontal">
+                                        <StackPanel Width="60">
+                                            <local:Knob x:Name="CompGainKnob" Width="46" Height="46" Minimum="0" Maximum="1" DefaultValue="0.22"
+                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Gain: adds volume back so the music isn't quieter overall"/>
+                                            <TextBlock Text="GAIN" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Width="60">
+                                            <local:Knob x:Name="CompThresholdKnob" Width="46" Height="46" Minimum="0" Maximum="1" DefaultValue="0.55"
+                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Threshold: the level where turning down starts"/>
+                                            <TextBlock Text="THRESH" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                        <StackPanel Width="60">
+                                            <local:Knob x:Name="CompRatioKnob" Width="46" Height="46" Minimum="0" Maximum="1" DefaultValue="0.4"
+                                                        SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Ratio: how strongly loud parts are turned down"/>
+                                            <TextBlock Text="RATIO" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Canvas>
+                            </Grid>
+                        </Border>
+
+                        <!-- The dynamics deck folded away: a plain blank panel with the COMP lamp and the unfold button -->
+                        <Border x:Name="DynFoldedPanel" Style="{StaticResource Faceplate}" Width="678" Height="30" Visibility="Collapsed"
+                                MouseLeftButtonDown="Case_MouseLeftButtonDown">
+                            <Grid>
+                                <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0">
+                                    <TextBlock Text="COMP" Style="{StaticResource EngravedTiny}" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <Ellipse x:Name="DynFoldedLamp" Style="{StaticResource Lamp}" VerticalAlignment="Center" Margin="0,0,12,0"
+                                             ToolTip="Lit while the compressor is on"/>
+                                    <Button Style="{StaticResource FoldTab}" Click="DynFold_Click" ToolTip="Unfold the dynamics deck (Ctrl+3)">
                                         <Path Data="{StaticResource ChevronDown}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
                                     </Button>
                                 </StackPanel>

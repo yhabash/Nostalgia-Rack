@@ -92,6 +92,11 @@
         <GradientStop Color="#D3C39C" Offset="0"/>
         <GradientStop Color="#E6DABD" Offset="1"/>
     </LinearGradientBrush>
+    <!-- The "smoked lens": when a key is lit its cap turns smoked bronze so the light reads clearly -->
+    <LinearGradientBrush x:Key="SmokedCapBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#5E4E36" Offset="0"/>
+        <GradientStop Color="#3A2F21" Offset="1"/>
+    </LinearGradientBrush>
     <RadialGradientBrush x:Key="LitHaloBrush">
         <GradientStop Color="#80F7F7A6" Offset="0"/>
         <GradientStop Color="#00F7F7A6" Offset="0.62"/>
@@ -280,7 +285,7 @@
             <Border x:Name="Ledge" CornerRadius="3" Background="#7A6A45" Margin="0,2,0,-2"/>
             <Border x:Name="Cap" CornerRadius="3" Background="{StaticResource CapBrush}"
                     BorderBrush="#A8956A" BorderThickness="0,0,0,2" Effect="{StaticResource CapShadow}">
-                <Border CornerRadius="3,3,0,0" BorderBrush="#FFFAF0" BorderThickness="0,1,0,0"/>
+                <Border x:Name="Shine" CornerRadius="3,3,0,0" BorderBrush="#FFFAF0" BorderThickness="0,1,0,0"/>
             </Border>
             <Border x:Name="Halo" CornerRadius="3" Background="{StaticResource LitHaloBrush}" Opacity="0"/>
             <ContentPresenter x:Name="Symbol" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -297,7 +302,10 @@
                 <Setter TargetName="Cap" Property="Effect" Value="{x:Null}"/>
             </Trigger>
             <Trigger Property="local:SkinProps.Lit" Value="True">
-                <Setter TargetName="Halo" Property="Opacity" Value="1"/>
+                <Setter TargetName="Cap" Property="Background" Value="{StaticResource SmokedCapBrush}"/>
+                <Setter TargetName="Cap" Property="BorderBrush" Value="#2A2116"/>
+                <Setter TargetName="Shine" Property="Opacity" Value="0.25"/>
+                <Setter TargetName="Halo" Property="Opacity" Value="0.3"/>
                 <Setter Property="Foreground" Value="{StaticResource LitBrush}"/>
                 <Setter TargetName="Symbol" Property="Effect" Value="{StaticResource LitGlow}"/>
             </Trigger>
@@ -359,7 +367,7 @@
                         <Border x:Name="Ledge" CornerRadius="3" Background="#7A6A45" Margin="0,2,0,-2"/>
                         <Border x:Name="Cap" CornerRadius="3" Background="{StaticResource CapBrush}"
                                 BorderBrush="#A8956A" BorderThickness="0,0,0,2" Effect="{StaticResource CapShadow}">
-                            <Border CornerRadius="3,3,0,0" BorderBrush="#FFFAF0" BorderThickness="0,1,0,0"/>
+                            <Border x:Name="Shine" CornerRadius="3,3,0,0" BorderBrush="#FFFAF0" BorderThickness="0,1,0,0"/>
                         </Border>
                         <Border x:Name="Halo" CornerRadius="3" Background="{StaticResource LitHaloBrush}" Opacity="0"/>
                         <ContentPresenter x:Name="Label" HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -368,7 +376,10 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Halo" Property="Opacity" Value="1"/>
+                            <Setter TargetName="Cap" Property="Background" Value="{StaticResource SmokedCapBrush}"/>
+                            <Setter TargetName="Cap" Property="BorderBrush" Value="#2A2116"/>
+                            <Setter TargetName="Shine" Property="Opacity" Value="0.25"/>
+                            <Setter TargetName="Halo" Property="Opacity" Value="0.3"/>
                             <Setter TargetName="Root" Property="RenderTransform">
                                 <Setter.Value><TranslateTransform Y="1"/></Setter.Value>
                             </Setter>

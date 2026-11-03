@@ -611,7 +611,7 @@ public partial class MainWindow : Window
         double grTarget = _engine.IsPlaying ? _engine.Compressor.GainReductionDb : 0;
         double grTau = grTarget > _needleGr ? 0.05 : 0.4;
         _needleGr += (grTarget - _needleGr) * (1 - Math.Exp(-dt / grTau));
-        if (EqDeck.Visibility == Visibility.Visible) GrMeter.Level = _needleGr;
+        if (DynDeck.Visibility == Visibility.Visible) GrMeter.Level = _needleGr;
         else { SlimVuLeft.Level = _needleLeft; SlimVuRight.Level = _needleRight; }
 
         // --- Time and seek bar (4 times a second is plenty) ---
@@ -839,8 +839,6 @@ public partial class MainWindow : Window
         _loadingComp = true;
         CompThresholdKnob.Value = _settings.CompThreshold;
         CompRatioKnob.Value = _settings.CompRatio;
-        CompAttackKnob.Value = _settings.CompAttack;
-        CompReleaseKnob.Value = _settings.CompRelease;
         CompGainKnob.Value = _settings.CompGain;
         _loadingComp = false;
         ApplyCompressor();
@@ -859,22 +857,16 @@ public partial class MainWindow : Window
     {
         _settings.CompThreshold = CompThresholdKnob.Value;
         _settings.CompRatio = CompRatioKnob.Value;
-        _settings.CompAttack = CompAttackKnob.Value;
-        _settings.CompRelease = CompReleaseKnob.Value;
         _settings.CompGain = CompGainKnob.Value;
 
         float threshold = Compressor.ThresholdFromKnob(_settings.CompThreshold);
         float ratio = Compressor.RatioFromKnob(_settings.CompRatio);
-        float attack = Compressor.AttackFromKnob(_settings.CompAttack);
-        float release = Compressor.ReleaseFromKnob(_settings.CompRelease);
+        float attack = Compressor.AttackMs, release = Compressor.ReleaseMs;
         float gain = Compressor.GainFromKnob(_settings.CompGain);
         _engine.Compressor.Set(threshold, ratio, attack, release, gain);
 
         CompThresholdKnob.ToolTip = $"Threshold {threshold:0} dB: the level where turning down starts";
         CompRatioKnob.ToolTip = $"Ratio {ratio:0.0}:1: how strongly loud parts are turned down";
-        CompAttackKnob.ToolTip = $"Attack {attack:0} ms: how quickly it reacts to a loud part";
-        CompReleaseKnob.ToolTip = release >= 1000 ? $"Release {release / 1000:0.0} s: how slowly it lets go afterwards"
-                                                  : $"Release {release:0} ms: how slowly it lets go afterwards";
         CompGainKnob.ToolTip = $"Gain +{gain:0.0} dB: adds volume back so the music isn't quieter overall";
         UpdateBoost();
     }
@@ -933,6 +925,7 @@ public partial class MainWindow : Window
         SkinProps.SetLit(SoftClipKey, _settings.SoftClip && !_bypass);
         SkinProps.SetLit(EqFoldedLamp, _settings.EqOn && !_bypass);
         SkinProps.SetLit(CompKey, _settings.CompOn && !_bypass);
+        SkinProps.SetLit(DynFoldedLamp, _settings.CompOn && !_bypass);
         UpdateBoost();
     }
 
@@ -940,6 +933,7 @@ public partial class MainWindow : Window
 
     private void MainFold_Click(object sender, RoutedEventArgs e) { _settings.SlimMode = !_settings.SlimMode; ApplyFolding(); }
     private void EqFold_Click(object sender, RoutedEventArgs e) { _settings.EqFolded = !_settings.EqFolded; ApplyFolding(); }
+    private void DynFold_Click(object sender, RoutedEventArgs e) { _settings.DynFolded = !_settings.DynFolded; ApplyFolding(); }
     private void PlaylistFold_Click(object sender, RoutedEventArgs e) { _settings.PlaylistFolded = !_settings.PlaylistFolded; ApplyFolding(); }
 
     private void ApplyFolding()
@@ -951,12 +945,14 @@ public partial class MainWindow : Window
         SlimDeck.Visibility = slim ? Visibility.Visible : Visibility.Collapsed;
         MainDeck.Visibility = slim ? Visibility.Collapsed : Visibility.Visible;
         EqDeck.Visibility = showEq ? Visibility.Visible : Visibility.Collapsed;
+        DynDeck.Visibility = !slim && !_settings.DynFolded ? Visibility.Visible : Visibility.Collapsed;
+        DynFoldedPanel.Visibility = !slim && _settings.DynFolded ? Visibility.Visible : Visibility.Collapsed;
         PlaylistDeck.Visibility = showList ? Visibility.Visible : Visibility.Collapsed;
 
         // A folded deck leaves a plain blank panel in the rack, with its unfold button.
         EqFoldedPanel.Visibility = !slim && _settings.EqFolded ? Visibility.Visible : Visibility.Collapsed;
         PlaylistFoldedPanel.Visibility = !slim && _settings.PlaylistFolded ? Visibility.Visible : Visibility.Collapsed;
-        EqSeam.Visibility = PlaylistSeam.Visibility = slim ? Visibility.Collapsed : Visibility.Visible;
+        EqSeam.Visibility = DynSeam.Visibility = PlaylistSeam.Visibility = slim ? Visibility.Collapsed : Visibility.Visible;
     }
 
     // ================= The window frame =================
@@ -1003,6 +999,7 @@ public partial class MainWindow : Window
             case ShortcutAction.VolumeDown: VolumeKnob.Value = Math.Max(0, VolumeKnob.Value - 0.05); break;
             case ShortcutAction.ToggleEq: ToggleEq(); break;
             case ShortcutAction.FoldEq: EqFold_Click(this, e); break;
+            case ShortcutAction.FoldDynamics: DynFold_Click(this, e); break;
             case ShortcutAction.FoldPlaylist: PlaylistFold_Click(this, e); break;
             case ShortcutAction.SlimMode: MainFold_Click(this, e); break;
             case ShortcutAction.Search:
@@ -1035,7 +1032,7 @@ public partial class MainWindow : Window
         updated.EqBank = old.EqBank; updated.EqBank1 = old.EqBank1; updated.EqBank2 = old.EqBank2;
         updated.EqOn = old.EqOn; updated.SoftClip = old.SoftClip;
         updated.CompOn = old.CompOn; updated.CompThreshold = old.CompThreshold; updated.CompRatio = old.CompRatio;
-        updated.CompAttack = old.CompAttack; updated.CompRelease = old.CompRelease; updated.CompGain = old.CompGain;
+        updated.CompGain = old.CompGain; updated.DynFolded = old.DynFolded;
         updated.EqFolded = old.EqFolded; updated.PlaylistFolded = old.PlaylistFolded; updated.SlimMode = old.SlimMode;
         _settings = updated;
 

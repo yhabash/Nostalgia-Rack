@@ -1,6 +1,13 @@
-# Nostalgia Rack 0.8.0
+# Nostalgia Rack 0.8.1
 
 The free hi-fi music player for Windows, in its champagne skin. (It used to be called "Amp Player".)
+
+## What's new in 0.8.1
+- **New DYNAMICS deck.** The compressor moved out of the EQ deck onto its own foldable deck, below the EQ: the gain-reduction meter, the **COMP** and **SOFT CLIP** keys, and the knobs. The empty right side is saved for the limiter and ReplayGain. Fold it with its tab or **Ctrl+3**; folded, it leaves a slim panel with a COMP lamp.
+- **Simpler compressor:** three knobs, in this order: **GAIN**, **THRESH**, **RATIO**. Attack and release are fixed at gentle settings (30 ms and 0.4 s).
+- **The EQ deck breathes again:** wider spacing between the sliders, and EQ ON and BYPASS sit on their own on the right.
+- **Clearer lights:** when a key or button is lit, its cap now turns smoked bronze and the pale yellow light shines through it, like real backlit hi-fi keys. The light is much easier to see than pale yellow on cream.
+- Fold shortcut list: Ctrl+1 EQ, **Ctrl+3 dynamics**, Ctrl+2 playlist.
 
 ## What's new in 0.8.0
 **The compressor works** (the first part of Milestone 7). It evens out quiet and loud passages, tuned for gentle levelling (late-night or background listening).
@@ -112,7 +119,7 @@ The transport keys follow Winamp. Single letters are ignored while you type in t
 | → / ← | Skip forward / back (15 seconds) |
 | Ctrl+Up / Ctrl+Down | Volume up / down |
 | Ctrl+E | EQ on / off |
-| Ctrl+1 / Ctrl+2 | Fold the EQ / the playlist |
+| Ctrl+1 / Ctrl+3 / Ctrl+2 | Fold the EQ / the dynamics deck / the playlist |
 | Ctrl+M | Slim strip |
 | Ctrl+F | Search |
 | Ctrl+, | Advanced settings |

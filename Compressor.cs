@@ -33,8 +33,11 @@ public sealed class Compressor
     // Settings (written by the screen, read by the audio thread).
     private volatile float _thresholdDb = -18f;
     private volatile float _ratio = 2.5f;
-    private volatile float _attackMs = 30f;
-    private volatile float _releaseMs = 400f;
+    // Attack and release are fixed at gentle settings (the knobs were removed to keep it simple).
+    public const float AttackMs = 30f;
+    public const float ReleaseMs = 400f;
+    private volatile float _attackMs = AttackMs;
+    private volatile float _releaseMs = ReleaseMs;
     private volatile float _makeupDb = 4f;
     private volatile bool _enabled;
 
@@ -64,19 +67,13 @@ public sealed class Compressor
     /// <summary>True when the makeup gain can push peaks up (so the soft clipper should watch).</summary>
     public bool IsBoosting => _enabled && _makeupDb > 0.05f;
 
-    // ---- The five knobs. Each knob runs from 0 to 1; these turn that into real values. ----
+    // ---- The knobs. Each knob runs from 0 to 1; these turn that into real values. ----
 
     /// <summary>THRESHOLD: −40 dB (knob fully left) … 0 dB (fully right).</summary>
     public static float ThresholdFromKnob(double k) => (float)(-40 + 40 * k);
 
     /// <summary>RATIO: 1:1 (no effect) … 10:1, spread so the gentle settings get most of the turn.</summary>
     public static float RatioFromKnob(double k) => (float)Math.Pow(10, k);
-
-    /// <summary>ATTACK: 1 ms … 200 ms (logarithmic).</summary>
-    public static float AttackFromKnob(double k) => (float)(1 * Math.Pow(200, k));
-
-    /// <summary>RELEASE: 50 ms … 2 s (logarithmic).</summary>
-    public static float ReleaseFromKnob(double k) => (float)(50 * Math.Pow(40, k));
 
     /// <summary>GAIN (makeup): 0 dB … +18 dB.</summary>
     public static float GainFromKnob(double k) => (float)(18 * k);
