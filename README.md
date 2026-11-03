@@ -2,6 +2,11 @@
 
 The free hi-fi music player for Windows, in its champagne skin. (It used to be called "Amp Player".)
 
+## Download
+Get the latest version from the **Releases** page of this repository (on the right of the main GitHub page). Download `NostalgiaRack-x.y.z-win-x64.zip`, unzip it, and double-click `NostalgiaRack.exe`. It runs on Windows 10 and 11 (64-bit), and there's nothing to install. Windows may say "Windows protected your PC" because the download isn't signed yet: click **More info**, then **Run anyway**.
+
+Releases are built automatically by GitHub (see `.github/workflows/release.yml`) whenever a new version is tagged. They include the BASS audio engine, which is free for non-commercial use (un4seen.com).
+
 ## What's new in 0.8.2
 - **Tidier DYNAMICS deck, and shorter:** COMP and SOFT CLIP sit side by side under the name, the three knobs (GAIN, THRESH, RATIO) are bigger, and the gain-reduction meter moved to the right end.
 - **Version number** in Advanced settings, bottom left (so testers can tell you which build they have).

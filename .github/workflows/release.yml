@@ -1,0 +1,107 @@
+# Builds Nostalgia Rack and publishes it on the Releases page.
+#
+# How it starts: when a version tag like "v0.8.3" is pushed (or by hand: Actions tab →
+# "Build and release" → Run workflow, typing the tag).
+# What it does, on one of GitHub's own Windows machines:
+#   1. downloads the four BASS files (64-bit) from un4seen.com,
+#   2. builds the same no-install folder as the "FriendsTestBuild" publish profile,
+#   3. zips it, and creates a pre-release with the "What's new" notes from README.md.
+# BASS is free for non-commercial use by individuals (un4seen.com/bass.html), so it may
+# ship inside this free download. Selling the player would need a BASS licence.
+
+name: Build and release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Version tag to (re)build, e.g. v0.8.3'
+        required: true
+
+permissions:
+  contents: write   # needed to create the release
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Check the tag matches the version in NostalgiaRack.csproj
+        shell: pwsh
+        run: |
+          [xml]$proj = Get-Content NostalgiaRack.csproj
+          $version = ($proj.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
+          if ("v$version" -ne $env:TAG) { throw "Tag $env:TAG doesn't match <Version>$version</Version> in NostalgiaRack.csproj" }
+          "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Download the BASS engine files (64-bit)
+        shell: pwsh
+        run: |
+          $files = @{
+            'bass.dll'       = 'https://www.un4seen.com/files/bass24.zip'
+            'bass_fx.dll'    = 'https://www.un4seen.com/files/z/0/bass_fx24.zip'
+            'bassmix.dll'    = 'https://www.un4seen.com/files/bassmix24.zip'
+            'basswasapi.dll' = 'https://www.un4seen.com/files/basswasapi24.zip'
+          }
+          New-Item -ItemType Directory -Force bass-download | Out-Null
+          foreach ($dll in $files.Keys) {
+            $zip = "bass-download/$dll.zip"
+            Invoke-WebRequest $files[$dll] -OutFile $zip
+            $dir = "bass-download/$dll"
+            Expand-Archive $zip -DestinationPath $dir -Force
+            # Take the copy from the x64 folder (the 32-bit one wouldn't load)
+            $found = Get-ChildItem $dir -Recurse -Filter $dll | Where-Object { $_.FullName -match '[\\/]x64[\\/]' } | Select-Object -First 1
+            if (-not $found) { throw "No 64-bit $dll found in $($files[$dll])" }
+            Copy-Item $found.FullName -Destination .
+            Write-Host "Got $dll from $($found.FullName)"
+          }
+
+      - name: Build the no-install folder
+        run: dotnet publish NostalgiaRack.csproj -c Release -p:PublishProfile=FriendsTestBuild
+
+      - name: Check all four BASS files made it in
+        shell: pwsh
+        run: |
+          foreach ($dll in 'bass.dll','bass_fx.dll','bassmix.dll','basswasapi.dll') {
+            if (-not (Test-Path "bin/publish/NostalgiaRack/$dll")) { throw "$dll is missing from the build" }
+          }
+
+      - name: Zip it
+        shell: pwsh
+        run: |
+          $zip = "NostalgiaRack-$env:VERSION-win-x64.zip"
+          Compress-Archive -Path bin/publish/NostalgiaRack -DestinationPath $zip -Force
+          "ZIP=$zip" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Write the release notes from README.md
+        shell: pwsh
+        run: |
+          $readme = Get-Content README.md -Raw
+          $pattern = "(?s)## What's new in $([regex]::Escape($env:VERSION))\s*\n(.*?)(?=\n## |\z)"
+          $m = [regex]::Match($readme, $pattern)
+          $notes = if ($m.Success) { $m.Groups[1].Value.Trim() } else { "Nostalgia Rack $env:VERSION" }
+          $notes += "`n`n---`n**How to run:** download the zip below, unzip it, and double-click ``NostalgiaRack.exe`` (Windows 10/11, 64-bit; nothing to install). Windows may say ""Windows protected your PC"": click **More info**, then **Run anyway**. See ``FOR TESTERS.txt`` inside."
+          Set-Content release-notes.md $notes
+
+      - name: Publish the release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view $env:TAG 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:TAG $env:ZIP --clobber
+          } else {
+            gh release create $env:TAG $env:ZIP --title "Nostalgia Rack $env:VERSION" --notes-file release-notes.md --prerelease
+          }
