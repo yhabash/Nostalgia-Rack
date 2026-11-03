@@ -66,6 +66,8 @@
                 <!-- Buttons at the bottom -->
                 <Grid DockPanel.Dock="Bottom" Height="52">
                     <Border Style="{StaticResource PinH}" VerticalAlignment="Top" Margin="16,0"/>
+                    <TextBlock x:Name="VersionText" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Left"
+                               VerticalAlignment="Center" Margin="20,0,0,0" ToolTip="The version of Nostalgia Rack you're running"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0">
                         <Button Style="{StaticResource TextKey}" Content="CANCEL" Width="78" Margin="0,0,8,0" Click="Cancel_Click" IsCancel="True"/>
                         <Button Style="{StaticResource TextKey}" Content="APPLY" Width="78" Margin="0,0,8,0" Click="Apply_Click"/>

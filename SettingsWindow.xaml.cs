@@ -32,6 +32,8 @@ public partial class SettingsWindow : Window
     public SettingsWindow(AppSettings settings, LibraryDatabase database)
     {
         InitializeComponent();
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        VersionText.Text = version == null ? "" : $"VERSION {version.Major}.{version.Minor}.{version.Build}";
         _settings = settings;
         _database = database;
         FillControls();

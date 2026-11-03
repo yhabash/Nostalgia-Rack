@@ -307,7 +307,7 @@
                              The compressor (gain-reduction meter, COMP and SOFT CLIP keys, three knobs).
                              The empty right side is kept for the limiter and ReplayGain (Milestone 7). -->
                         <Border x:Name="DynSeam" Style="{StaticResource Seam}"/>
-                        <Border x:Name="DynDeck" Style="{StaticResource Faceplate}" Width="678" Height="124">
+                        <Border x:Name="DynDeck" Style="{StaticResource Faceplate}" Width="678" Height="100">
                             <Grid>
                                 <Border Background="{StaticResource HairlineBrush}" IsHitTestVisible="False"/>
                                 <Canvas>
@@ -318,33 +318,39 @@
                                         <Path Data="{StaticResource ChevronUp}" Stroke="{StaticResource StencilBrush}" StrokeThickness="1.8" Width="10" Height="6" Stretch="Uniform"/>
                                     </Button>
 
+                                    <!-- Left: the name, then COMP and SOFT CLIP side by side -->
                                     <TextBlock Canvas.Left="20" Canvas.Top="15" Text="DYNAMICS" Style="{StaticResource Engraved}"/>
-                                    <local:VuMeter x:Name="GrMeter" Canvas.Left="20" Canvas.Top="38" Width="116" Height="72" IsGainReduction="True" Level="0"
-                                                   ToolTip="Gain reduction: how many dB the compressor is turning the music down right now"/>
-                                    <Button x:Name="CompKey" Canvas.Left="152" Canvas.Top="44" Width="88" Height="24" Style="{StaticResource TextKey}"
-                                            Content="COMP" Click="CompKey_Click"
-                                            ToolTip="Compressor on / off (lit = on). Evens out quiet and loud passages."/>
-                                    <Button x:Name="SoftClipKey" Canvas.Left="152" Canvas.Top="80" Width="88" Height="24" Style="{StaticResource TextKey}"
-                                            Content="SOFT CLIP" Click="SoftClipKey_Click"
-                                            ToolTip="Rounds off loud peaks smoothly instead of letting them crackle (lit = on)"/>
-                                    <!-- The compressor knobs (double-click a knob for its starting position) -->
-                                    <StackPanel Canvas.Left="256" Canvas.Top="38" Orientation="Horizontal">
-                                        <StackPanel Width="60">
-                                            <local:Knob x:Name="CompGainKnob" Width="46" Height="46" Minimum="0" Maximum="1" DefaultValue="0.22"
+                                    <StackPanel Canvas.Left="20" Canvas.Top="48" Orientation="Horizontal">
+                                        <Button x:Name="CompKey" Width="84" Height="24" Margin="0,0,8,0" Style="{StaticResource TextKey}"
+                                                Content="COMP" Click="CompKey_Click"
+                                                ToolTip="Compressor on / off (lit = on). Evens out quiet and loud passages."/>
+                                        <Button x:Name="SoftClipKey" Width="96" Height="24" Style="{StaticResource TextKey}"
+                                                Content="SOFT CLIP" Click="SoftClipKey_Click"
+                                                ToolTip="Rounds off loud peaks smoothly instead of letting them crackle (lit = on)"/>
+                                    </StackPanel>
+
+                                    <!-- Middle: the compressor knobs (double-click a knob for its starting position) -->
+                                    <StackPanel Canvas.Left="236" Canvas.Top="12" Orientation="Horizontal">
+                                        <StackPanel Width="74">
+                                            <local:Knob x:Name="CompGainKnob" Width="58" Height="58" Minimum="0" Maximum="1" DefaultValue="0.22"
                                                         SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Gain: adds volume back so the music isn't quieter overall"/>
                                             <TextBlock Text="GAIN" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
                                         </StackPanel>
-                                        <StackPanel Width="60">
-                                            <local:Knob x:Name="CompThresholdKnob" Width="46" Height="46" Minimum="0" Maximum="1" DefaultValue="0.55"
+                                        <StackPanel Width="74">
+                                            <local:Knob x:Name="CompThresholdKnob" Width="58" Height="58" Minimum="0" Maximum="1" DefaultValue="0.55"
                                                         SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Threshold: the level where turning down starts"/>
                                             <TextBlock Text="THRESH" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
                                         </StackPanel>
-                                        <StackPanel Width="60">
-                                            <local:Knob x:Name="CompRatioKnob" Width="46" Height="46" Minimum="0" Maximum="1" DefaultValue="0.4"
+                                        <StackPanel Width="74">
+                                            <local:Knob x:Name="CompRatioKnob" Width="58" Height="58" Minimum="0" Maximum="1" DefaultValue="0.4"
                                                         SmallChange="0.02" ValueChanged="CompKnob_ValueChanged" ToolTip="Ratio: how strongly loud parts are turned down"/>
                                             <TextBlock Text="RATIO" Style="{StaticResource EngravedTiny}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
                                         </StackPanel>
                                     </StackPanel>
+
+                                    <!-- Right end: the gain-reduction meter (the space before it is kept for the limiter and ReplayGain) -->
+                                    <local:VuMeter x:Name="GrMeter" Canvas.Right="46" Canvas.Top="14" Width="114" Height="71" IsGainReduction="True" Level="0"
+                                                   ToolTip="Gain reduction: how many dB the compressor is turning the music down right now"/>
                                 </Canvas>
                             </Grid>
                         </Border>

@@ -1,6 +1,10 @@
-# Nostalgia Rack 0.8.1
+# Nostalgia Rack 0.8.2
 
 The free hi-fi music player for Windows, in its champagne skin. (It used to be called "Amp Player".)
+
+## What's new in 0.8.2
+- **Tidier DYNAMICS deck, and shorter:** COMP and SOFT CLIP sit side by side under the name, the three knobs (GAIN, THRESH, RATIO) are bigger, and the gain-reduction meter moved to the right end.
+- **Version number** in Advanced settings, bottom left (so testers can tell you which build they have).
 
 ## What's new in 0.8.1
 - **New DYNAMICS deck.** The compressor moved out of the EQ deck onto its own foldable deck, below the EQ: the gain-reduction meter, the **COMP** and **SOFT CLIP** keys, and the knobs. The empty right side is saved for the limiter and ReplayGain. Fold it with its tab or **Ctrl+3**; folded, it leaves a slim panel with a COMP lamp.
