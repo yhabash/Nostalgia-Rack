@@ -1,7 +1,9 @@
 # Builds Nostalgia Rack and publishes it on the Releases page.
 #
-# How it starts: when a version tag like "v0.8.3" is pushed (or by hand: Actions tab →
-# "Build and release" → Run workflow, typing the tag).
+# How it starts: whenever the <Version> in NostalgiaRack.csproj changes on main (each new
+# version), or by hand: Actions tab → "Build and release" → Run workflow.
+# If a release for that version already exists, it does nothing. GitHub creates the
+# version tag (e.g. v0.8.3) itself when it publishes the release.
 # What it does, on one of GitHub's own Windows machines:
 #   1. downloads the four BASS files (64-bit) from un4seen.com,
 #   2. builds the same no-install folder as the "FriendsTestBuild" publish profile,
@@ -13,12 +15,9 @@ name: Build and release
 
 on:
   push:
-    tags: ['v*']
+    branches: [main]
+    paths: ['NostalgiaRack.csproj']
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Version tag to (re)build, e.g. v0.8.3'
-        required: true
 
 permissions:
   contents: write   # needed to create the release
@@ -26,26 +25,31 @@ permissions:
 jobs:
   release:
     runs-on: windows-latest
-    env:
-      TAG: ${{ github.event.inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
 
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: '10.0.x'
 
-      - name: Check the tag matches the version in NostalgiaRack.csproj
+      - name: Read the version, and skip if it's already released
         shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           [xml]$proj = Get-Content NostalgiaRack.csproj
           $version = ($proj.Project.PropertyGroup | Where-Object { $_.Version } | Select-Object -First 1).Version
-          if ("v$version" -ne $env:TAG) { throw "Tag $env:TAG doesn't match <Version>$version</Version> in NostalgiaRack.csproj" }
           "VERSION=$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "TAG=v$version" | Out-File -FilePath $env:GITHUB_ENV -Append
+          gh release view "v$version" 2>$null | Out-Null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host "Release v$version already exists; nothing to do."
+            "SKIP=true" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+          exit 0
 
       - name: Download the BASS engine files (64-bit)
+        if: env.SKIP != 'true'
         shell: pwsh
         run: |
           $files = @{
@@ -68,9 +72,11 @@ jobs:
           }
 
       - name: Build the no-install folder
+        if: env.SKIP != 'true'
         run: dotnet publish NostalgiaRack.csproj -c Release -p:PublishProfile=FriendsTestBuild
 
       - name: Check all four BASS files made it in
+        if: env.SKIP != 'true'
         shell: pwsh
         run: |
           foreach ($dll in 'bass.dll','bass_fx.dll','bassmix.dll','basswasapi.dll') {
@@ -78,6 +84,7 @@ jobs:
           }
 
       - name: Zip it
+        if: env.SKIP != 'true'
         shell: pwsh
         run: |
           $zip = "NostalgiaRack-$env:VERSION-win-x64.zip"
@@ -85,6 +92,7 @@ jobs:
           "ZIP=$zip" | Out-File -FilePath $env:GITHUB_ENV -Append
 
       - name: Write the release notes from README.md
+        if: env.SKIP != 'true'
         shell: pwsh
         run: |
           $readme = Get-Content README.md -Raw
@@ -95,13 +103,9 @@ jobs:
           Set-Content release-notes.md $notes
 
       - name: Publish the release
+        if: env.SKIP != 'true'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release view $env:TAG 2>$null
-          if ($LASTEXITCODE -eq 0) {
-            gh release upload $env:TAG $env:ZIP --clobber
-          } else {
-            gh release create $env:TAG $env:ZIP --title "Nostalgia Rack $env:VERSION" --notes-file release-notes.md --prerelease
-          }
+          gh release create $env:TAG $env:ZIP --target $env:GITHUB_SHA --title "Nostalgia Rack $env:VERSION" --notes-file release-notes.md --prerelease
